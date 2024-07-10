@@ -18,7 +18,7 @@ const onClick = () => {
 <style lang="scss" scoped>
 .logo {
   font-size: 28px;
-  color: #409EFF;
+  color: var(--primary-color);
   cursor: pointer;
 }
 </style>

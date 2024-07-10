@@ -40,5 +40,8 @@ const showNav = computed(() => route.name !== 'login');
   --el-header-padding: 0;
   box-shadow: 0 2px 5px rgba(0, 0, 0, .06);
 }
+.el-main {
+  --el-main-padding: 0;
+}
 
 </style>

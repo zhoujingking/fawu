@@ -1,0 +1,83 @@
+<template>
+  <el-dialog v-model="dialogVisible" title="新建项目" width="500" align-center>
+    <el-form class="form" ref="formRef" :model="form" :rules="formRules" label-position="right" label-width="auto">
+      <el-form-item label="项目名称" prop="name">
+        <el-input v-model="form.name" placeholder="请输入项目名称" />
+      </el-form-item>
+      <el-form-item label="描述" prop="description">
+        <el-input type="textarea" v-model="form.description" placeholder="请输入项目描述" resize="horizontal" :max-length="200"
+          :rows="10" show-word-limit :input-style="{ height: '200px' }" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="onCancel">取消</el-button>
+        <el-button type="primary" @click="onConfirm" :loading="isLoading">
+          确认
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+</template>
+
+<script setup>
+import { ref, defineModel, reactive, defineProps } from 'vue';
+import { useProjectStore } from '@/stores/project';
+import { storeToRefs } from 'pinia';
+
+const props = defineProps({
+  name: String,
+  description: String
+})
+
+const emit = defineEmits(['change'])
+
+const dialogVisible = defineModel({
+  type: Boolean,
+  required: true
+})
+
+const formRef = ref();
+const form = ref({
+  name: props.name,
+  description: props.description
+});
+
+const formRules = reactive({
+  name: [
+    { required: true, message: '项目名称不能为空', trigger: 'blur' },
+  ],
+  description: [
+    {
+      required: true,
+      message: '项目描述不能为空',
+      trigger: 'blur',
+    },
+  ]
+});
+
+const isLoading = ref(false);
+const store = useProjectStore();
+const { projectList } = storeToRefs(store);
+
+const onCancel = () => {
+  dialogVisible.value = false;
+}
+
+const onConfirm = () => {
+  formRef.value.validate(isValid => {
+    if (isValid) {
+      // isLoading.value = true;
+      dialogVisible.value = false;
+      projectList.value.push({
+        ...form.value
+      })
+      emit('change', {
+        ...form.value
+      })
+    }
+  })
+}
+</script>
+
+<style lang="scss" scoped></style>
