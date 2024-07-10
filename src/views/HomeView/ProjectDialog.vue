@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="新建项目" width="500" align-center>
+  <el-dialog v-model="dialogVisible" :title="title" width="500" align-center>
     <el-form class="form" ref="formRef" :model="form" :rules="formRules" label-position="right" label-width="auto">
       <el-form-item label="项目名称" prop="name">
         <el-input v-model="form.name" placeholder="请输入项目名称" />
@@ -21,14 +21,16 @@
 </template>
 
 <script setup>
-import { ref, defineModel, reactive, defineProps } from 'vue';
+import { ref, defineModel, reactive, defineProps, computed } from 'vue';
 import { useProjectStore } from '@/stores/project';
 import { storeToRefs } from 'pinia';
 
 const props = defineProps({
-  name: String,
-  description: String
+  data: Object,
+  type: String
 })
+
+console.log(props.data)
 
 const emit = defineEmits(['change'])
 
@@ -37,10 +39,14 @@ const dialogVisible = defineModel({
   required: true
 })
 
+const title = computed(() => {
+  return props.type === 'new' ? '新建项目' : '编辑项目';
+})
+
 const formRef = ref();
 const form = ref({
-  name: props.name,
-  description: props.description
+  name: props.type === 'new' ? '' : props.data?.name,
+  description: props.type === 'new' ? '' : props.data?.description
 });
 
 const formRules = reactive({
