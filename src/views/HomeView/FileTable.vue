@@ -90,11 +90,11 @@ const onRateChange = () => {
 
     // &.selected {
     //   background-color: #EFF4FF;
-    //   color: var(--primary-color);
+    //   color: var(--link-color);
     // }
 
     .title {
-      color: var(--primary-color);
+      color: var(--link-color);
       cursor: pointer;
     }
   }

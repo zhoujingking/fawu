@@ -1,6 +1,6 @@
 <template>
   <div class="row tag" v-for="(tag, index) in tags" :key="index">
-    <div class="name">{{ tag.name }}</div>
+    <div class="name" :title="tag.name">{{ tag.name }}</div>
     <div class="row ops">
       <el-icon class="icon" @click="onEdit(tag)">
         <Edit />
@@ -21,10 +21,17 @@ import {
   Plus,
 } from '@element-plus/icons-vue'
 import { ref } from 'vue';
-const tags = ref([{
-  id: 1,
-  name: '测试标签'
-}])
+
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true
+  }
+})
+
+console.log(props.data)
+
+const tags = ref(props.data?.tags || [])
 const dialogVisible = ref(false)
 const currTag = ref(null)
 const actionType = ref('new');
@@ -74,7 +81,10 @@ const onTagDone = tag => {
   margin-bottom: 12px;
   border: solid 1px var(--border-color);
   .name {
+    overflow: hidden;
     width: calc(100% - 42px);
+    white-space: nowrap;
+    text-overflow: ellipsis;
     line-height: 22px;
   }
   .ops {
@@ -85,7 +95,7 @@ const onTagDone = tag => {
     .icon {
       cursor: pointer;
       :hover {
-        color: var(--primary-color);
+        color: var(--link-color);
       }
     }
   }

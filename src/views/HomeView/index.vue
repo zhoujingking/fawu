@@ -188,7 +188,7 @@ const onContextMenuClick = item => {
 
     .title {
       font-size: 20px;
-      color: var(--primary-color);
+      color: var(--link-color);
     }
   }
 
@@ -201,7 +201,7 @@ const onContextMenuClick = item => {
   .empty-text {
     margin-top: 12px;
     .new-text {
-      color: var(--primary-color);
+      color: var(--link-color);
       cursor: pointer;
     }
   }
