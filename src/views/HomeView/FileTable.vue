@@ -18,14 +18,17 @@
       </div>
     </div>
   </div>
-  <el-drawer v-model="showFileDetail" title="文件详情">
-
+  <el-drawer v-model="showFileDetail" :with-header="false">
+    <FileAbstract :data="currRow"/> 
+    <FileTagList />
   </el-drawer>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import FileAbstract from '@/components/FileAbstract.vue'
+import FileTagList from '@/components/FileTagList/index.vue'
 
 const data = ref([
   {
