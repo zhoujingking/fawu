@@ -1,6 +1,7 @@
 <template>
   <el-dialog v-model="dialogVisible" :title="title" width="500" align-center>
-    <el-form class="form" ref="formRef" :model="form" :rules="formRules" label-position="right" label-width="auto">
+    <el-form class="form" ref="formRef" :model="form" :rules="formRules" label-position="right" label-width="auto"
+      @submit.prevent>
       <el-form-item label="目录名称" prop="name">
         <el-input v-model="form.name" placeholder="请输入目录名称" />
       </el-form-item>
@@ -62,10 +63,8 @@ const onConfirm = () => {
     if (isValid) {
       // isLoading.value = true;
       dialogVisible.value = false;
-      // projectList.value.push({
-      //   ...form.value
-      // })
       emit('change', {
+        id: props.type === 'new' ? `id-${form.value.name}` : props.data?.id,
         ...form.value
       })
     }

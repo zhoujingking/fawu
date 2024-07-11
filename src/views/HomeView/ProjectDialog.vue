@@ -1,8 +1,9 @@
 <template>
   <el-dialog v-model="dialogVisible" :title="title" width="500" align-center>
-    <el-form class="form" ref="formRef" :model="form" :rules="formRules" label-position="right" label-width="auto">
+    <el-form class="form" ref="formRef" :model="form" :rules="formRules" label-position="right" label-width="auto"
+      @submit.prevent>
       <el-form-item label="项目名称" prop="name">
-        <el-input v-model="form.name" placeholder="请输入项目名称" />
+        <el-input type="text" v-model="form.name" placeholder="请输入项目名称" />
       </el-form-item>
       <el-form-item label="描述" prop="description">
         <el-input type="textarea" v-model="form.description" placeholder="请输入项目描述" resize="horizontal" :max-length="200"
@@ -29,8 +30,6 @@ const props = defineProps({
   data: Object,
   type: String
 })
-
-console.log(props.data)
 
 const emit = defineEmits(['change'])
 
@@ -71,14 +70,16 @@ const onCancel = () => {
 }
 
 const onConfirm = () => {
+  console.log('safasdf')
   formRef.value.validate(isValid => {
     if (isValid) {
       // isLoading.value = true;
       dialogVisible.value = false;
-      projectList.value.push({
-        ...form.value
-      })
+      // projectList.value.push({
+      //   ...form.value
+      // })
       emit('change', {
+        id: props.type === 'new' ? `id-${form.value.name}` : props.data?.id,
         ...form.value
       })
     }

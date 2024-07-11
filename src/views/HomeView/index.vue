@@ -6,19 +6,31 @@
         <el-button class="new-btn" type="primary" size="small" :icon="Plus" @click="onNewProject">新建项目</el-button>
       </div>
       <div class="tree-container">
-        <el-tree style="max-width: 600px" :data="treeData" highlight-current default-expand-all
-          @node-contextmenu="onContextMenu" />
+        <el-tree ref="treeRef" :data="treeData" highlight-current default-expand-all
+          :props="nodeProps"
+          node-key="id"
+          :current-node-key="selectedNode?.id"
+          @node-contextmenu="onContextMenu">
+          <template #empty>
+            <div class="empty-text">暂无项目</div>
+            <div class="empty-text">您可以<span class="new-text" @click="onNewProject">新建项目</span></div>
+          </template>
+        </el-tree>
       </div>
     </div>
     <div class="content"></div>
     <ProjectDialog v-if="projectDialogVisible" v-model="projectDialogVisible"
       :type="actionType"
-      :data="{ name: selectedNode?.label, description: selectedNode?.description }" 
+      :data="selectedNode" 
       @change="onProjectDone" />
     <FolderDialog v-if="folderDialogVisible" v-model="folderDialogVisible"
       :type="actionType"
-      :data="{ name: selectedNode?.label }" 
+      :data="selectedNode" 
       @change="onFolderDone"
+    />
+    <UploadDialog v-if="uploadDialogVisible" v-model="uploadDialogVisible"
+      :data="selectedNode" 
+      @change="onUploadDone"
     />
     <TreeContextMenu v-model="isContextMenuShow" :options="contextMenuOptions" @click="onContextMenuClick" />
   </div>
@@ -30,120 +42,72 @@ import {
 } from '@element-plus/icons-vue'
 import ProjectDialog from './ProjectDialog.vue';
 import FolderDialog from './FolderDialog.vue';
+import UploadDialog from './UploadDialog.vue';
 import TreeContextMenu from './TreeContextMenu.vue';
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 
+
+const treeRef = ref(null);
+const nodeProps = {
+  label: 'name',
+  children: 'children'
+}
 const projectDialogVisible = ref(false);
 const folderDialogVisible = ref(false);
+const uploadDialogVisible = ref(false);
+const actionType = ref('new');
 
 const onNewProject = () => {
   projectDialogVisible.value = true;
+  actionType.value = 'new';
 }
 
 const onProjectDone = project => {
-  console.log(project)
+  if (actionType.value === 'new') {
+    treeData.value.push(project)
+    selectedNode.value = project;
+  } else { // edit
+    const targetProject = treeData.value.find(item => item.id === project.id);
+    targetProject.name = project.name;
+    targetProject.description = project.description;
+  }
 }
 
 const onFolderDone = folder => {
-  console.log(folder)
+  if (actionType.value === 'new') {
+    selectedNode.value.children = selectedNode.value.children || [];
+    selectedNode.value.children.push(folder);
+    nextTick(() => {
+      selectedNode.value = folder;
+    });
+  } else { // edit
+    selectedNode.value.name = folder.name;
+  }
+}
+
+const onUploadDone = () => {
+
 }
 
 const treeData = ref([
   {
-    label: '我的项目',
+    id: 1,
+    name: '我的项目',
     description: '我的项目描述',
     children: [
       {
-        label: '目录1',
+        id: 2,
+        name: '目录1',
         children: [
           {
-            label: '目录1-1'
+            id: 3,
+            name: '目录1-1'
           }
         ]
       },
       {
-        label: '目录2'
-      }
-    ]
-  },
-  {
-    label: '我的项目2',
-    description: '我的项目描述',
-    children: [
-      {
-        label: '目录1',
-        children: [
-          {
-            label: '目录1-1'
-          }
-        ]
-      },
-      {
-        label: '目录2'
-      }
-    ]
-  },
-  {
-    label: '生成项目',
-    description: '生成项目描述',
-    children: [
-      {
-        label: '目录1',
-        children: [
-          {
-            label: '目录1-1'
-          }
-        ]
-      },
-      {
-        label: '目录2'
-      }
-    ]
-  },
-  {
-    label: '生成项目2',
-    description: '生成项目描述',
-    children: [
-      {
-        label: '目录1',
-        children: [
-          {
-            label: '目录1-1'
-          }
-        ]
-      },
-      {
-        label: '目录2',
-        children: [
-          {
-            label: '目录2-1',
-            children: [
-              {
-                label: '目录2-1-1',
-                children: [
-                  {
-                    label: '目录2-1-1-1目录2-1-1-1目录2-1-1-1目录2-1-1-1目录2-1-1-1目录2-1-1-1',
-                    children: [
-                      {
-                        label: '目录2-1',
-                        children: [
-                          {
-                            label: '目录2-1-1',
-                            children: [
-                              {
-                                label: '目录2-1-1-1目录2-1-1-1目录2-1-1-1目录2-1-1-1目录2-1-1-1目录2-1-1-1'
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+        id: 4,
+        name: '目录2'
       }
     ]
   },
@@ -156,7 +120,6 @@ const contextMenuOptions = ref({
 });
 const selectedNode = ref(null);
 const onContextMenu = (e, node) => {
-  console.log(node)
   selectedNode.value = node;
   isContextMenuShow.value = true;
   contextMenuOptions.value = {
@@ -165,16 +128,32 @@ const onContextMenu = (e, node) => {
   }
 }
 
-const actionType = ref('new');
+
 const onContextMenuClick = item => {
-  const isProjectNode = treeData.value.map(node => node.label).includes(selectedNode.value.label);
+  const isProjectNode = treeData.value.map(node => node.name).includes(selectedNode.value.name);
   if (item === 'new') {
     actionType.value = 'new';
     folderDialogVisible.value = true;
   } else if (item === 'upload') {
-
+    uploadDialogVisible.value = true;
   } else if (item === 'delete') {
-
+    ElMessageBox.confirm(
+      '您确定要删除当前节点吗?',
+      'Warning',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    )
+    .then(() => {
+      treeRef.value.remove(selectedNode.value);
+      selectedNode.value = null;
+      ElMessage({
+        type: 'success',
+        message: '节点删除成功',
+      })
+    })
   } else if (item === 'edit') {
     actionType.value = 'edit';
     if (isProjectNode) {
@@ -212,6 +191,14 @@ const onContextMenuClick = item => {
     overflow: auto;
     height: calc(100% - 54px);
     padding: 12px 20px;
+  }
+
+  .empty-text {
+    margin-top: 12px;
+    .new-text {
+      color: var(--primary-color);
+      cursor: pointer;
+    }
   }
 }
 </style>
