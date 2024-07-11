@@ -49,7 +49,7 @@ const onFileChange = files => {
 
 const onExceed = () => {
   ElMessage({
-    message: `文件总数不能超过${maxNumOfFiles}个，请重新选择`,
+    message: `最多同时上传${maxNumOfFiles}个文件个`,
     type: 'error'
   })
 };

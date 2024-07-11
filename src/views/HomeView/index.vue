@@ -18,7 +18,9 @@
         </el-tree>
       </div>
     </div>
-    <div class="content"></div>
+    <div class="content">
+      <FileTable />
+    </div>
     <ProjectDialog v-if="projectDialogVisible" v-model="projectDialogVisible"
       :type="actionType"
       :data="selectedNode" 
@@ -44,6 +46,7 @@ import ProjectDialog from './ProjectDialog.vue';
 import FolderDialog from './FolderDialog.vue';
 import UploadDialog from './UploadDialog.vue';
 import TreeContextMenu from './TreeContextMenu.vue';
+import FileTable from './FileTable.vue';
 import { ref, nextTick } from 'vue';
 
 
@@ -172,6 +175,8 @@ const onContextMenuClick = item => {
 
 .aside {
   width: 300px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, .06);
+  // background-color: #f4f4f7;
 
   // background: cyan;
   .header {
@@ -200,5 +205,9 @@ const onContextMenuClick = item => {
       cursor: pointer;
     }
   }
+}
+.content {
+  width: calc(100% - 300px);
+  padding: 24px;
 }
 </style>
