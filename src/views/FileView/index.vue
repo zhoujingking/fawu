@@ -13,7 +13,9 @@
       <el-tab-pane label="相关性" name="relatives">
         <FileRelatives />
       </el-tab-pane>
-      <el-tab-pane label="知识图谱" name="graph">Task</el-tab-pane>
+      <el-tab-pane label="知识图谱" name="graph">
+        <Graph class="doc" />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -24,6 +26,7 @@ import FileTagList from '@/components/FileTagList/index.vue';
 import FileRelatives from './FileRelatives.vue';
 import { ref } from 'vue';
 import FileViewer from '@/components/FileViewer/index.vue';
+import Graph from '@/components/Graph.vue';
 
 const activeTab = ref('detail');
 const data = ref({

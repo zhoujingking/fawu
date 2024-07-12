@@ -25,7 +25,7 @@
       <el-tab-pane label="详情" name="detail">
         <FileAbstract :data="currRow"/> 
       </el-tab-pane>
-      <el-tab-pane label="概览" name="abstract">
+      <el-tab-pane label="标签" name="abstract">
         <FileTagList />
       </el-tab-pane>
     </el-tabs>
