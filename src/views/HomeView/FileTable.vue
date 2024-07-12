@@ -9,7 +9,9 @@
     <div class="body">
       <div class="tr row" :class="{ selected: row.id === currRow?.id }" v-for="(row, index) in data" :key="index"
         @click="onRowClick(row)">
-        <div class="td title" :title="row.title" @click="onRowNav(row)">{{ row.title }}</div>
+        <div class="td title" :title="row.title">
+          <span @click="onRowNav(row)">{{ row.title }}</span>
+        </div>
         <div class="td author">{{ row.author }}</div>
         <div class="td date">{{ row.date }}</div>
         <div class="td star">
@@ -19,8 +21,14 @@
     </div>
   </div>
   <el-drawer v-model="showFileDetail" :with-header="false">
-    <FileAbstract :data="currRow"/> 
-    <FileTagList />
+    <el-tabs class="tabs" v-model="activeTab" lazy>
+      <el-tab-pane label="详情" name="detail">
+        <FileAbstract :data="currRow"/> 
+      </el-tab-pane>
+      <el-tab-pane label="概览" name="abstract">
+        <FileTagList />
+      </el-tab-pane>
+    </el-tabs>
   </el-drawer>
 </template>
 
@@ -49,6 +57,7 @@ const data = ref([
 
 const currRow = ref();
 const showFileDetail = ref(false);
+const activeTab = ref('detail');
 const router = useRouter();
 
 const onRowClick = row => {

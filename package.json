@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "@imengyu/vue3-context-menu": "^1.4.1",
+    "@vue-office/pdf": "^2.0.2",
     "axios": "^1.7.2",
     "element-plus": "^2.7.6",
+    "pdfjs-dist": "^4.4.168",
     "pinia": "^2.1.7",
     "vue": "^3.4.29",
+    "vue-demi": "^0.14.8",
     "vue-router": "^4.3.3"
   },
   "devDependencies": {
