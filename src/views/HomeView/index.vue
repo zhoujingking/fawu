@@ -46,7 +46,7 @@ import ProjectDialog from './ProjectDialog.vue';
 import FolderDialog from './FolderDialog.vue';
 import UploadDialog from './UploadDialog.vue';
 import TreeContextMenu from './TreeContextMenu.vue';
-import FileTable from './FileTable.vue';
+import FileTable from '@/components/FileTable.vue';
 import { ref, nextTick } from 'vue';
 
 

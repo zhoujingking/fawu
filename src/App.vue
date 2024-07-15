@@ -5,6 +5,7 @@ import { ElConfigProvider } from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import { computed, ref } from 'vue';
 import Logo from './components/Logo.vue';
+import SearchBox from './components/SearchBox/index.vue'
 
 const locale = ref(zhCn);
 const route = useRoute();
@@ -18,6 +19,7 @@ const showNav = computed(() => route.name !== 'login');
       <ElHeader v-if="showNav">
         <div class="row logo-container">
           <Logo />
+          <SearchBox />
         </div>
       </ElHeader>
       <ElMain>
@@ -29,6 +31,7 @@ const showNav = computed(() => route.name !== 'login');
 
 <style lang="scss" scoped>
 .logo-container {
+  justify-content: space-between;
   align-items: center;
   height: 100%;
   padding: 0 24px;
