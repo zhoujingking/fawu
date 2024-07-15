@@ -26,6 +26,7 @@ import { reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus'
 import { AUTH_KEY } from '@/config';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 
 const formRef = ref();
 const form = ref({
@@ -48,13 +49,20 @@ const formRules = reactive({
 
 const btnText = ref('登录');
 const router = useRouter();
+const store = useUserStore();
 
 const onLogin = () => {
   formRef.value.validate(async (isValid) => {
     if (isValid) {
       try {
         // const { data } = await axios.post('/login', form.value);
-        const token = 'fake_token';
+        const token = 'fake_token'; 
+        store.setUserInfo({
+          id: 1,
+          nickname: 'test user',
+          avatarIcon: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+        })
+
         localStorage.setItem(AUTH_KEY, token);
         router.replace({
           name: 'home'

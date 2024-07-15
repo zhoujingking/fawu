@@ -6,6 +6,8 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import { computed, ref } from 'vue';
 import Logo from './components/Logo.vue';
 import SearchBox from './components/SearchBox/index.vue'
+import Avatar from './components/Avatar/index.vue'
+
 
 const locale = ref(zhCn);
 const route = useRoute();
@@ -19,7 +21,10 @@ const showNav = computed(() => route.name !== 'login');
       <ElHeader v-if="showNav">
         <div class="row logo-container">
           <Logo />
-          <SearchBox />
+          <div class="row right">
+            <SearchBox />
+            <Avatar class="avatar" />
+          </div>
         </div>
       </ElHeader>
       <ElMain>
@@ -35,6 +40,12 @@ const showNav = computed(() => route.name !== 'login');
   align-items: center;
   height: 100%;
   padding: 0 24px;
+}
+.right {
+  align-items: center;
+  .avatar {
+    margin-left: 16px;
+  }
 }
 </style>
 
