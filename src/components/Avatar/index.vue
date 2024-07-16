@@ -15,23 +15,29 @@
 </template>
 
 <script setup>
-import { AUTH_KEY, USER_INFO } from '@/config';
 import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
+import { clearAllStorage } from '@/utils';
+import { sendPostRequest } from '@/utils';
 
 const store = useUserStore();
 const { useId, nickname, avatarIcon } = storeToRefs(store);
 const router = useRouter();
 
-const onCommand = command => {
+const onCommand = async command => {
   if (command === 'logout') {
     // do logout
-    localStorage.removeItem(USER_INFO);
-    store.clearUserInfo();
-    router.push({
-      name: 'login'
-    })
+    try {
+      await sendPostRequest('/logout');
+    } finally {
+      clearAllStorage();
+      store.clearUserInfo();
+      router.push({
+        name: 'login'
+      })
+    }
+    
   }
 }
 

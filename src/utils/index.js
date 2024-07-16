@@ -1,10 +1,20 @@
 import { AUTH_KEY, USER_INFO } from '@/config';
+import { v4 as uuid } from 'uuid';
+import axios from 'axios';
 
-export const sendPostRequest = async (url, payload) => {
+export const sendPostRequest = (url, payload) => {
   // fetch context from localstorage
-  const context = {};
-  const userInfoStr = localStorage.getItem(USER_INFO);
-  console.log(userInfoStr)
+  const userInfo = getUserInfoFromStorage();
+  const context = {
+    userId: userInfo?.userId || '',
+    token: getAuthToken() || '',
+    traceId: uuid()
+  };
+  const requestBody = {
+    context,
+    data: payload || {}
+  }
+  return axios.post(url, requestBody);
 }
 
 export const getUserInfoFromStorage = () => {
@@ -18,6 +28,16 @@ export const getUserInfoFromStorage = () => {
 
 export const setUserInfoToStorage = (userInfo) => localStorage.setItem(USER_INFO, JSON.stringify(userInfo));
 
+export const clearUserInfoStorage = () => localStorage.removeItem(USER_INFO);
+
 export const getAuthToken = () => localStorage.getItem(AUTH_KEY);
 
 export const setAuthToken = token => localStorage.setItem(AUTH_KEY, token);
+
+export const clearAuthToken = () => localStorage.removeItem(AUTH_KEY);
+
+export const clearAllStorage = () => {
+  clearUserInfoStorage();
+  clearAuthToken();
+}
+

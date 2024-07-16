@@ -11,16 +11,9 @@ axios.interceptors.request.use(config => {
   return config;
 })
 
+// TODO: 处理401
 axios.interceptors.response.use(
   res => {
     return res;
-  },
-  ({ response }) => {
-    if (response.status === 401) {
-      router.replace({
-        name: 'login'
-      })
-    }
-    return Promise.reject(error);
   }
 )

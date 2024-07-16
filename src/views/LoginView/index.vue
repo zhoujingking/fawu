@@ -20,14 +20,13 @@
 </template>
 
 <script setup>
-import axios from 'axios';
 import Logo from '@/components/Logo.vue'
 import { reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus'
-import { AUTH_KEY, USER_INFO } from '@/config';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
-import { setAuthToken, setUserInfoToStorage } from '@/utils';
+import { sendPostRequest, setAuthToken, setUserInfoToStorage } from '@/utils';
+import MD5 from 'crypto-js/md5';
 
 const formRef = ref();
 const form = ref({
@@ -57,9 +56,13 @@ const onLogin = () => {
     if (isValid) {
       try {
         // const { data } = await axios.post('/login', form.value);
+        // const { data } = await sendPostRequest('/login', {
+        //   phone: form.value.phone,
+        //   password: MD5(form.value.password).toString()
+        // })
         const token = 'fake_token'; 
         const userInfo = {
-          id: 1,
+          userId: 1,
           nickname: 'test user',
           avatarIcon: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
         };
