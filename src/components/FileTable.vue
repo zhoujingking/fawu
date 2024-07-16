@@ -38,22 +38,12 @@ import { useRouter } from 'vue-router';
 import FileAbstract from '@/components/FileAbstract.vue'
 import FileTagList from '@/components/FileTagList/index.vue'
 
-const data = ref([
-  {
-    id: 1,
-    title: '如果你确实需要使用',
-    author: '周树人',
-    date: '2024-07-12 13:23:21',
-    rate: 2
-  },
-  {
-    id: 2,
-    title: '通常不建议这样做，因为它违背了Spring Boot的“约定优于配置”的原则，并且可能引入不必要的复杂性',
-    author: '周树人',
-    date: '2024-07-12',
-    rate: 4
-  },
-])
+const props = defineProps({
+  data: {
+    type: Array, 
+    requried: true
+  }
+})
 
 const currRow = ref();
 const showFileDetail = ref(false);
