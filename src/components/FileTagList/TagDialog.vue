@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { ref, defineModel, reactive, defineProps, computed } from 'vue';
+import { ref, reactive, computed } from 'vue';
 
 const props = defineProps({
   data: Object,

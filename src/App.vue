@@ -1,5 +1,5 @@
 <script setup>
-import { RouterView, useRoute } from 'vue-router'
+import { RouterView, useRoute, useRouter } from 'vue-router'
 
 import { ElConfigProvider } from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
@@ -7,12 +7,26 @@ import { computed, ref } from 'vue';
 import Logo from './components/Logo.vue';
 import SearchBox from './components/SearchBox/index.vue'
 import Avatar from './components/Avatar/index.vue'
+import { useUserStore } from './stores/user';
+import { getAuthToken, getUserInfoFromStorage } from './utils'
 
 
 const locale = ref(zhCn);
 const route = useRoute();
 const showNav = computed(() => route.name !== 'login');
 
+const router = useRouter();
+const store = useUserStore();
+// try to access localstorage to populate user store
+const userInfo = getUserInfoFromStorage();
+const token = getAuthToken();
+if (userInfo && token) {
+  store.setUserInfo(userInfo);
+} else {
+  router.replace({
+    name: 'login'
+  })
+}
 </script>
 
 <template>

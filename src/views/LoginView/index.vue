@@ -24,9 +24,10 @@ import axios from 'axios';
 import Logo from '@/components/Logo.vue'
 import { reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus'
-import { AUTH_KEY } from '@/config';
+import { AUTH_KEY, USER_INFO } from '@/config';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
+import { setAuthToken, setUserInfoToStorage } from '@/utils';
 
 const formRef = ref();
 const form = ref({
@@ -57,13 +58,14 @@ const onLogin = () => {
       try {
         // const { data } = await axios.post('/login', form.value);
         const token = 'fake_token'; 
-        store.setUserInfo({
+        const userInfo = {
           id: 1,
           nickname: 'test user',
           avatarIcon: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
-        })
-
-        localStorage.setItem(AUTH_KEY, token);
+        };
+        store.setUserInfo(userInfo)
+        setUserInfoToStorage(userInfo);
+        setAuthToken(token);
         router.replace({
           name: 'home'
         })

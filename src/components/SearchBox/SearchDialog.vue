@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { ref, defineModel, defineProps } from 'vue';
+import { ref } from 'vue';
 import FileTable from '../FileTable.vue';
 
 const props = defineProps({

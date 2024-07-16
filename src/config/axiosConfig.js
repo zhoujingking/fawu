@@ -5,15 +5,14 @@ import router from '@/router'
 
 axios.defaults.baseURL = '/api/v1'
 axios.interceptors.request.use(config => {
-  if (localStorage.getItem(AUTH_KEY)) {
-    config.headers['Authorization'] = localStorage.getItem(AUTH_KEY);
-  }
+  // if (localStorage.getItem(AUTH_KEY)) {
+  //   config.headers['Authorization'] = localStorage.getItem(AUTH_KEY);
+  // }
   return config;
 })
 
 axios.interceptors.response.use(
   res => {
-    console.log(res)
     return res;
   },
   ({ response }) => {

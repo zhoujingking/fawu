@@ -29,8 +29,6 @@ const props = defineProps({
   }
 })
 
-console.log(props.data)
-
 const tags = ref(props.data?.tags || [])
 const dialogVisible = ref(false)
 const currTag = ref(null)
@@ -69,7 +67,12 @@ const onNewTag = () => {
 }
 
 const onTagDone = tag => {
-  tags.value.push(tag);
+  if (actionType.value === 'new') {
+    tags.value.push(tag);
+  } else { // edit
+    currTag.value.name = tag.name;
+  }
+  
 }
 
 </script>

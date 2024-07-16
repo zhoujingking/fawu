@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { AUTH_KEY } from '@/config';
+import { AUTH_KEY, USER_INFO } from '@/config';
 import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
@@ -27,7 +27,7 @@ const router = useRouter();
 const onCommand = command => {
   if (command === 'logout') {
     // do logout
-    localStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem(USER_INFO);
     store.clearUserInfo();
     router.push({
       name: 'login'

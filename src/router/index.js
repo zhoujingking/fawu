@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView/index.vue'
-import { AUTH_KEY } from '@/config'
+import { getAuthToken } from '@/utils'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,7 +33,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem(AUTH_KEY)
+  const token = getAuthToken();
   if (!token && to.meta.requireAuth) {
     next({
       name: 'login'

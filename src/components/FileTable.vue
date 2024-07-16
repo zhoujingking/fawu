@@ -26,7 +26,7 @@
         <FileAbstract :data="currRow"/> 
       </el-tab-pane>
       <el-tab-pane label="标签" name="abstract">
-        <FileTagList />
+        <FileTagList :data="[]" />
       </el-tab-pane>
     </el-tabs>
   </el-drawer>

@@ -40,8 +40,6 @@ import {
 } from '@element-plus/icons-vue'
 import { ContextMenu, ContextMenuItem } from '@imengyu/vue3-context-menu'
 
-import { defineProps, defineModel, defineEmits } from 'vue';
-
 defineProps({
   options: Object
 })
