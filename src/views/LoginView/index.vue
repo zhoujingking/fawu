@@ -26,7 +26,7 @@ import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { sendPostRequest, setAuthToken, setUserInfoToStorage } from '@/utils';
-import MD5 from 'crypto-js/md5';
+import { encrypt, decrypt } from '@/utils/cypher'
 
 const formRef = ref();
 const form = ref({
@@ -55,11 +55,11 @@ const onLogin = () => {
   formRef.value.validate(async (isValid) => {
     if (isValid) {
       try {
-        // const { data } = await axios.post('/login', form.value);
         // const { data } = await sendPostRequest('/login', {
         //   phone: form.value.phone,
-        //   password: MD5(form.value.password).toString()
-        // })
+        //   password: encrypt(form.value.password)
+        // });
+
         const token = 'fake_token'; 
         const userInfo = {
           userId: 1,

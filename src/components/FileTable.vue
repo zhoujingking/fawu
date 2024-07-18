@@ -14,7 +14,7 @@
         </div>
         <div class="td author">{{ row.author }}</div>
         <div class="td date">{{ row.date }}</div>
-        <div class="td star">
+        <div class="td star" @click.stop>
           <el-rate v-model="row.rate" @change="onRateChange" />
         </div>
       </div>
