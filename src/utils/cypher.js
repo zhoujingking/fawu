@@ -3,7 +3,7 @@ import utf8 from 'crypto-js/enc-utf8';
 import ECB from 'crypto-js/mode-ecb';
 import Pkcs7 from 'crypto-js/pad-pkcs7';
 
-export const AES_SECRET_KEY = 'key';
+export const AES_SECRET_KEY = 'fawuzhiku&666666';
 
 export const encrypt = (message) => {
   const encryptedBytes = AES.encrypt(message, AES_SECRET_KEY, {
