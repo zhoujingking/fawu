@@ -6,7 +6,8 @@ import Pkcs7 from 'crypto-js/pad-pkcs7';
 export const AES_SECRET_KEY = 'fawuzhiku&666666';
 
 export const encrypt = (message) => {
-  const encryptedBytes = AES.encrypt(message, AES_SECRET_KEY, {
+  const key = utf8.parse(AES_SECRET_KEY);
+  const encryptedBytes = AES.encrypt(message, key, {
     mode: ECB,
     padding: Pkcs7
   });
@@ -15,7 +16,8 @@ export const encrypt = (message) => {
 }
 
 export const decrypt = (message) => {
-  const decryptBytes = AES.decrypt(message, AES_SECRET_KEY, {
+  const key = utf8.parse(AES_SECRET_KEY);
+  const decryptBytes = AES.decrypt(message, key, {
     mode: ECB,
     padding: Pkcs7
   });
