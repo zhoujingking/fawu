@@ -13,7 +13,7 @@
         </el-form-item>
       </el-form>
       <div class="op row">
-        <el-button type="primary" size="large" class="btn" @click="onLogin">{{ btnText }}</el-button>
+        <el-button type="primary" size="large" class="btn" :loading="isLoading" @click="onLogin">{{ btnText }}</el-button>
       </div>
     </el-card>
   </div>
@@ -26,12 +26,14 @@ import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { sendPostRequest, setAuthToken, setUserInfoToStorage } from '@/utils';
-import { encrypt, decrypt } from '@/utils/cypher'
+import { encrypt } from '@/utils/cypher';
+
+const isLoading = ref(false);
 
 const formRef = ref();
 const form = ref({
-  phone: '',
-  password: ''
+  phone: '11111111111',
+  password: 'password'
 });
 
 const formRules = reactive({
@@ -55,16 +57,18 @@ const onLogin = () => {
   formRef.value.validate(async (isValid) => {
     if (isValid) {
       try {
-        // const { data } = await sendPostRequest('/login', {
-        //   phone: form.value.phone,
-        //   password: encrypt(form.value.password)
-        // });
+        isLoading.value = true;
+        const data = await sendPostRequest('/user/login', {
+          phone: form.value.phone,
+          password: encrypt(form.value.password)
+        });
+        isLoading.value = false;
 
-        const token = 'fake_token'; 
+        const token = data.token; 
         const userInfo = {
-          userId: 1,
-          nickname: 'test user',
-          avatarIcon: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+          userId: data.userId,
+          nickname: data.nickname,
+          avatarIcon: data.avatarIcon
         };
         store.setUserInfo(userInfo)
         setUserInfoToStorage(userInfo);
@@ -72,9 +76,9 @@ const onLogin = () => {
         router.replace({
           name: 'home'
         })
-      } catch {
+      } catch(e) {
         ElMessage({
-          message: '登录失败，请确认手机号和密码是否正确',
+          message: e.message || '登录失败，请确认手机号和密码是否正确',
           type: 'error',
         })
       }

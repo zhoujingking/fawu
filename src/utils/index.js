@@ -2,7 +2,7 @@ import { AUTH_KEY, USER_INFO } from '@/config';
 import { v4 as uuid } from 'uuid';
 import axios from 'axios';
 
-export const sendPostRequest = (url, payload) => {
+export const sendPostRequest = async (url, payload) => {
   // fetch context from localstorage
   const userInfo = getUserInfoFromStorage();
   const context = {
@@ -14,7 +14,11 @@ export const sendPostRequest = (url, payload) => {
     context,
     data: payload || {}
   }
-  return axios.post(url, requestBody);
+  const { data } = await axios.post(url, requestBody);
+  if (data.code === 0) {
+    return data.result || {};
+  }
+  throw new Error(data.msg);
 }
 
 export const getUserInfoFromStorage = () => {

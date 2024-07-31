@@ -29,7 +29,7 @@ const onCommand = async command => {
   if (command === 'logout') {
     // do logout
     try {
-      await sendPostRequest('/logout');
+      await sendPostRequest('/user/logout');
     } finally {
       clearAllStorage();
       store.clearUserInfo();
