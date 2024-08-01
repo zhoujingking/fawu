@@ -21,13 +21,13 @@
       <div class="empty row" v-if="!data.length">文件夹中暂无文件</div>
     </div>
   </div>
-  <el-drawer v-model="showFileDetail" :with-header="false">
+  <el-drawer v-if="showFileDetail" v-model="showFileDetail" :with-header="false">
     <el-tabs class="tabs" v-model="activeTab" lazy>
       <el-tab-pane label="详情" name="detail">
         <FileAbstract :data="currRow"/> 
       </el-tab-pane>
       <el-tab-pane label="标签" name="abstract">
-        <FileTagList :data="[]" />
+        <FileTagList :data="tagList" :fileId="currRow?.fileId" />
       </el-tab-pane>
     </el-tabs>
   </el-drawer>
@@ -49,6 +49,7 @@ const props = defineProps({
 })
 
 const currRow = ref();
+const tagList = ref([]);
 const showFileDetail = ref(false);
 const activeTab = ref('detail');
 const router = useRouter();

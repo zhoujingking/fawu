@@ -1,22 +1,27 @@
 <template>
-  <div class="row tag" v-for="(tag, index) in tags" :key="index">
-    <div class="name" :title="tag.name">{{ tag.name }}</div>
-    <div class="row ops">
-      <el-icon class="icon" @click="onEdit(tag)">
+  <div v-loading="isLoading">
+    <div class="row tag" v-for="(tag, index) in tags" :key="tag.tagId">
+      <div class="name" :title="tag.tagName">{{ tag.tagName }}</div>
+      <div class="row ops">
+        <!-- <el-icon class="icon" @click="onEdit(tag)">
         <Edit />
-      </el-icon>
-      <el-icon class="icon" @click="onDelete(tag)">
-        <Delete />
-      </el-icon>
+      </el-icon> -->
+        <el-icon class="icon" @click="onDelete(tag)">
+          <Delete />
+        </el-icon>
+      </div>
+    </div>
+    <div v-if="!tags.length" class="empty">
+      暂无标签
     </div>
   </div>
   <el-button type="primary" size="small" :icon="Plus" @click="onNewTag">添加标签</el-button>
-  <TagDialog v-if="dialogVisible" v-model="dialogVisible" :data="currTag" :type="actionType" @change="onTagDone" />
+  <TagDialog v-if="dialogVisible" v-model="dialogVisible" :fileId="fileId" :type="actionType" @change="onTagDone" />
 </template>
 
 <script setup>
+import { sendPostRequest } from '@/utils';
 import {
-  Edit,
   Delete,
   Plus,
 } from '@element-plus/icons-vue'
@@ -26,38 +31,68 @@ const props = defineProps({
   data: {
     type: Object,
     required: true
+  },
+  fileId: {
+    type: String,
+    required: true
   }
 })
 
-const tags = ref(props.data?.tags || [])
-const dialogVisible = ref(false)
-const currTag = ref(null)
-const actionType = ref('new');
-
-const onEdit = (tag) => {
-  currTag.value = tag;
-  actionType.value = 'edit';
-  dialogVisible.value = true;
+const getTagList = async fileId => {
+  try {
+    const data = await sendPostRequest('/file/getFileTagList', {
+      fileId
+    });
+    return data.tagList || [];
+  } catch {
+    return [];
+  }
 }
 
+const deleteTag = async (fileId, tagName) => {
+  return sendPostRequest('/tag/deleteTag4File', {
+    fileId,
+    tagName
+  })
+}
+
+const populateTagList = async fileId => {
+  isLoading.value = true;
+  tags.value = await getTagList(fileId);
+  isLoading.value = false;
+}
+
+const tags = ref(props.data?.tags || [])
+const dialogVisible = ref(false);
+const actionType = ref('new');
+const isLoading = ref(false);
+
+populateTagList(props.fileId);
+
 const onDelete = tag => {
-  currTag.value = tag;
   ElMessageBox.confirm(
-      '您确定要删除当前标签吗?',
-      'Warning',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
+    '您确定要删除当前标签吗?',
+    'Warning',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(async () => {
+      try {
+        await deleteTag(props.fileId, tag.tagName);
+        tags.value = tags.value.filter(item => item.tagId !== tag.tagId);
+        ElMessage({
+          type: 'success',
+          message: '标签删除成功',
+        });
+      } catch (e) {
+        ElMessage({
+          type: 'error',
+          message: '标签删除失败',
+        });
       }
-    )
-    .then(() => {
-      tags.value = tags.value.filter(item => item.id !== tag.id);
-      currTag.value = null;
-      ElMessage({
-        type: 'success',
-        message: '标签删除成功',
-      })
     })
 }
 
@@ -66,13 +101,8 @@ const onNewTag = () => {
   dialogVisible.value = true;
 }
 
-const onTagDone = tag => {
-  if (actionType.value === 'new') {
-    tags.value.push(tag);
-  } else { // edit
-    currTag.value.name = tag.name;
-  }
-  
+const onTagDone = () => {
+  populateTagList(props.fileId);
 }
 
 </script>
@@ -83,24 +113,42 @@ const onTagDone = tag => {
   padding: 2px 6px;
   margin-bottom: 12px;
   border: solid 1px var(--border-color);
+
+  &:hover {
+    border-color: var(--link-color);
+    .name, .icon {
+      color: var(--link-color);
+    }
+  }
+
   .name {
     overflow: hidden;
-    width: calc(100% - 42px);
+    width: calc(100% - 22px);
     white-space: nowrap;
     text-overflow: ellipsis;
     line-height: 22px;
   }
+
   .ops {
     justify-content: space-around;
     align-items: center;
-    width: 42px;
+    width: 22px;
 
     .icon {
       cursor: pointer;
+
       :hover {
-        color: var(--link-color);
+        color: var(--link-hover-color);
       }
     }
   }
+}
+
+.empty {
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  color: var(--primary-text-color);
+  // background-color: #F6F6F6;
 }
 </style>

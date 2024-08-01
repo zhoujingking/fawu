@@ -18,15 +18,23 @@
 </template>
 
 <script setup>
+import { sendPostRequest } from '@/utils';
 import { ref, reactive, computed } from 'vue';
 
 const props = defineProps({
   data: Object,
-  type: String
+  type: String,
+  fileId: String
 })
 
-
 const emit = defineEmits(['change'])
+
+const addTag = async (fileId, tagName) => {
+  return sendPostRequest('/tag/addTag4File', {
+    fileId,
+    tagName
+  });
+}
 
 const dialogVisible = defineModel({
   type: Boolean,
@@ -55,14 +63,19 @@ const onCancel = () => {
 }
 
 const onConfirm = () => {
-  formRef.value.validate(isValid => {
+  formRef.value.validate(async isValid => {
     if (isValid) {
-      // isLoading.value = true;
-      dialogVisible.value = false;
-      emit('change', {
-        id: props.type === 'new' ? `id-${form.value.name}` : props.data?.id,
-        ...form.value
-      })
+      try {
+        await addTag(props.fileId, form.value.name);
+        isLoading.value = true;
+        dialogVisible.value = false;
+        emit('change');
+      } catch(e) {
+        ElMessage({
+          type: 'error',
+          message: `添加标签失败: ${e.message}`
+        })
+      }
     }
   })
 }
