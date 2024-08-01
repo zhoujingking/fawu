@@ -96,6 +96,7 @@ const onConfirm = () => {
           })
           projectId = props.data.id;
         }
+        dialogVisible.value = false;
         emit('change', {
           id: projectId,
           ...form.value

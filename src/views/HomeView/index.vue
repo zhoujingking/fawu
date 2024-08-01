@@ -150,6 +150,7 @@ const onProjectDone = project => {
   if (actionType.value === 'new') {
     const newProject = {
       ...project,
+      type: 'project',
       uniqueId: `project-${project.id}`
     }
     treeData.value.push(newProject)
@@ -165,6 +166,7 @@ const onFolderDone = folder => {
   if (actionType.value === 'new') {
     const newFolder = {
       ...folder,
+      type: 'folder',
       uniqueId: `folder-${folder.id}`
     }
     selectedNode.value.children = selectedNode.value.children || [];
