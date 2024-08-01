@@ -47,41 +47,41 @@ import TreeContextMenu from './TreeContextMenu.vue';
 import FileTable from '@/components/FileTable.vue';
 import { ref, nextTick, computed } from 'vue';
 import { ElLoading } from 'element-plus';
+import { sendPostRequest } from '@/utils';
 
 const getProjectList = async () => {
-  const list = [
-    {
-      id: 1,
-      name: '我的项目',
-      description: '我的项目描述'
-    },
-    {
-      id: 2,
-      name: 'test',
-      description: '我的项目描述'
-    },
-  ];
-  return list.map(proj => ({
-    ...proj,
+  const data = await sendPostRequest('/project/getProjectList');
+  return (data?.projectList || []).map(proj => ({
+    name: proj.projectName,
+    id: proj.projectId,
     type: 'project'
-  }))
+  }));
+}
+
+
+
+const deleteProject = async (id) => {
+  return sendPostRequest('/project/deleteProject', {
+    projectId: id
+  })
 }
 
 const getFolderList = async (id, type = 'folder') => {
-  const list = [
-    {
-      id: Math.random(),
-      name: 'test-folder'
-    },
-    {
-      id: Math.random(),
-      name: 'test-folder2'
-    }
-  ];
-  return list.map(folder => ({
-    ...folder,
-    type: 'folder'
-  }))
+  // const list = [
+  //   {
+  //     id: Math.random(),
+  //     name: 'test-folder'
+  //   },
+  //   {
+  //     id: Math.random(),
+  //     name: 'test-folder2'
+  //   }
+  // ];
+  // return list.map(folder => ({
+  //   ...folder,
+  //   type: 'folder'
+  // }))
+  return [];
 }
 
 const getFileListByTag = async folderId => {
@@ -146,6 +146,7 @@ const fileList = ref([]);
 const isLoading = ref(false);
 
 getProjectList().then(data => {
+  console.log(data)
   treeData.value = data;
 });
 
@@ -307,7 +308,8 @@ const onContextMenuClick = item => {
         type: 'warning',
       }
     )
-      .then(() => {
+      .then(async () => {
+        await deleteProject(selectedNode.value.id)
         treeRef.value.remove(selectedNode.value);
         selectedNode.value = null;
         ElMessage({

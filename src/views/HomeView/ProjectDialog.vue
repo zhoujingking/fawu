@@ -23,8 +23,20 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue';
-import { useProjectStore } from '@/stores/project';
-import { storeToRefs } from 'pinia';
+import { sendPostRequest } from '@/utils';
+
+const createProject = async (name, description) => {
+  const data = sendPostRequest('/project/addProject', {
+    projectName: name,
+    describe: description
+  });
+  return data;
+}
+
+const updateProject = async payload => {
+  const data = sendPostRequest('/project/updateProject', payload);
+  return data;
+}
 
 const props = defineProps({
   data: Object,
@@ -62,26 +74,39 @@ const formRules = reactive({
 });
 
 const isLoading = ref(false);
-const store = useProjectStore();
-const { projectList } = storeToRefs(store);
 
 const onCancel = () => {
   dialogVisible.value = false;
 }
 
 const onConfirm = () => {
-  console.log('safasdf')
-  formRef.value.validate(isValid => {
+  formRef.value.validate(async isValid => {
     if (isValid) {
-      // isLoading.value = true;
-      dialogVisible.value = false;
-      // projectList.value.push({
-      //   ...form.value
-      // })
-      emit('change', {
-        id: props.type === 'new' ? `id-${form.value.name}` : props.data?.id,
-        ...form.value
-      })
+      isLoading.value = true;
+      try {
+        let projectId = '';
+        if (props.type === 'new') {
+          const data = await createProject(form.value.name, form.value.description);
+          projectId = data.projectId;
+        } else {
+          await updateProject({
+            projectId: props.data.id,
+            projectName: form.value.name,
+            describe: form.value.description
+          })
+          projectId = props.data.id;
+        }
+        emit('change', {
+          id: projectId,
+          ...form.value
+        })
+      } catch (e) {
+        ElMessage({
+          message: e.message,
+          type: 'error',
+        })
+      }
+      isLoading.value = false;
     }
   })
 }
