@@ -1,7 +1,7 @@
 <template>
   <el-dialog v-model="dialogVisible" title="上传文件" width="500" align-center>
-    <ElUpload class="upload" ref="uploadRef" :auto-upload="false" drag multiple :accept="fileExtensions" :limit="maxNumOfFiles" @change="onFileChange"
-      @exceed="onExceed">
+    <ElUpload class="upload" ref="uploadRef" :auto-upload="false" drag multiple :accept="fileExtensions"
+      :limit="maxNumOfFiles" :file-list="fileList" @change="onFileChange" @remove="onFileRemove" @exceed="onExceed">
       <el-icon class="el-icon--upload"><upload-filled /></el-icon>
       <div class="el-upload__text">
         拖拽文件或 <em>点击上传</em>
@@ -24,17 +24,22 @@ import {
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus';
 import { ref } from 'vue';
+import axios from 'axios';
+import { v4 as uuid } from 'uuid';
+import { getAuthToken, getUserInfoFromStorage } from '@/utils';
 
 const props = defineProps({
   data: Object,
   type: String
-})
-
+});
 
 const emit = defineEmits(['change'])
 
-const fileExtensions = '.doc,.docx,.pdf,.xlsx,.csv,.txt';
+const fileExtensions = '.doc,.docx,.pdf,.xlsx,.csv,.pptx';
 const maxNumOfFiles = 5;
+const fileSizeLimit = 10; // M
+
+const fileList = ref([]);
 
 const dialogVisible = defineModel({
   type: Boolean,
@@ -43,9 +48,51 @@ const dialogVisible = defineModel({
 
 const isLoading = ref(false);
 
-const onFileChange = files => {
-  console.log(files)
+const uploadFiles = async (id, files) => {
+  const formData = new FormData();
+  formData.append('data', JSON.stringify({
+    folderId: id
+  }));
+  const userInfo = getUserInfoFromStorage();
+  const context = {
+    userId: userInfo?.userId || '',
+    token: getAuthToken() || '',
+    traceId: uuid()
+  };
+  formData.append('context', JSON.stringify(context));
+  files.forEach(file => formData.append('files', file));
+  const { data } = await axios(
+    {
+      url: '/file/uploadFile',
+      method: 'post',
+      data: formData,
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+  if (data.code === 0) {
+    return data.result || {};
+  }
+  throw new Error(data.msg);
+}
+
+const onFileChange = (file, listOfFile) => {
+  const isLt10M = file.size / 1024 / 1024 < fileSizeLimit;
+  if (!isLt10M) {
+    fileList.value = listOfFile.filter(item => item.uuid !== file.uuid);
+
+    ElMessage({
+      message: `文件大小不能超过${fileSizeLimit}MB`,
+      type: 'error'
+    })
+  } else {
+    fileList.value = listOfFile;
+  }
 };
+
+const onFileRemove = (file, fileList) => {
+  fileList.value = fileList;
+}
+
 
 const onExceed = () => {
   ElMessage({
@@ -58,17 +105,24 @@ const onCancel = () => {
   dialogVisible.value = false;
 }
 
-const onConfirm = () => {
+const onConfirm = async () => {
   isLoading.value = true;
-  setTimeout(() => {
+  try {
+    const files = fileList.value.map(item => item.raw);
+    await uploadFiles(props.data.id, files);
     ElMessage({
-    message: `文件上传成功`,
-    type: 'success'
-  })
+      message: `文件上传成功`,
+      type: 'success'
+    });
     isLoading.value = false;
     dialogVisible.value = false;
-  }, 3000);
-  
+    emit('change');
+  } catch(e) {
+    ElMessage({
+      message: `文件上传失败 (${e.message})`,
+      type: 'error'
+    })
+  }
 }
 </script>
 

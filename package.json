@@ -15,6 +15,7 @@
     "@imengyu/vue3-context-menu": "^1.4.1",
     "axios": "^1.7.2",
     "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.12",
     "echarts": "^5.5.1",
     "element-plus": "^2.7.6",
     "pdfjs-dist": "^4.4.168",

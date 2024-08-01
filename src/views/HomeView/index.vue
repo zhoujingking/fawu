@@ -24,7 +24,7 @@
         </div>
       </div>
     </div>
-    <div class="content" v-loading="isLoading" element-loading-text="加载中">
+    <div class="content" v-loading="isFileListLoading" element-loading-text="加载中">
       <FileTable :data="fileList" />
     </div>
     <ProjectDialog v-if="projectDialogVisible" v-model="projectDialogVisible" :type="actionType" :data="selectedNode"
@@ -111,39 +111,16 @@ const getFileListByTag = async folderId => {
     }
   ]
 }
-const getFileListByFolder = async tagId => {
-  return [
-    {
-      id: 1,
-      title: '如果你确实需要使用',
-      author: '周树人',
-      date: '2024-07-12 13:23:21',
-      rate: 2
-    },
-    {
-      id: 2,
-      title: '通常不建议这样做，因为它违背了Spring Boot的“约定优于配置”的原则，并且可能引入不必要的复杂性',
-      author: '周树人',
-      date: '2024-07-12',
-      rate: 4
-    },
-  ]
+const getFileListByFolder = async id => {
+  const data = await getFolderDetail(id);
+  return data.fileList || [];
 }
 
 const populateFileList = async (id, type = 'folder') => {
-  // const loading = ElLoading.service({
-  //   lock: true,
-  //   text: '加载中',
-  // });
-  isLoading.value = true;
+  isFileListLoading.value = true;
   const request = type === 'folder' ? getFileListByFolder : getFileListByTag;
-  setTimeout(() => {
-    request(id).then(data => {
-      fileList.value = data;
-    })
-    isLoading.value = false;
-    // loading.close()
-  }, 2000)
+  fileList.value = await request(id);
+  isFileListLoading.value = false;
 }
 
 const treeRef = ref(null);
@@ -159,7 +136,8 @@ const treeData = ref([]);
 const selectedNode = ref(null);
 const selectTag = ref({});
 const fileList = ref([]);
-const isLoading = ref(false);
+const folderTags = ref([]);
+const isFileListLoading = ref(false);
 
 getProjectList().then(data => {
   treeData.value = data;
@@ -202,10 +180,15 @@ const onFolderDone = folder => {
 }
 
 const onUploadDone = () => {
-
+  populateFileList(selectedNode.value.id, 'folder');
 }
 
-const onNodeClick = (node, treeNode) => {
+const onNodeClick = (node) => {
+  if (node.type === 'folder') {
+    getFolderDetail(node.id).then(data => {
+      folderTags.value = data?.tagList || [];
+    })
+  }
   if (selectedNode.value?.id !== node.id || selectedNode.value?.type !== node.type) {
     selectedNode.value = node;
     selectTag.value = {};
@@ -222,65 +205,6 @@ const onNodeClick = (node, treeNode) => {
   }
 }
 
-const folderTags = computed(() => {
-  if (selectedNode.value?.type === 'folder') {
-    return [
-      {
-        id: 1,
-        name: 'test-tagafasdf'
-      },
-      {
-        id: 2,
-        name: 'tagsfasdfsdaf'
-      },
-      {
-        id: 3,
-        name: 'test-tagafasdf'
-      },
-      {
-        id: 4,
-        name: 'tagsfasdfsdaf'
-      },
-      {
-        id: 11,
-        name: 'test-tagafasdf'
-      },
-      {
-        id: 21,
-        name: 'tagsfasdfsdaf'
-      },
-      {
-        id: 31,
-        name: 'test-tagafasdf'
-      },
-      {
-        id: 41,
-        name: 'tagsfasdfsdaf'
-      },
-      {
-        id: 42,
-        name: 'tagsfasdfsdaf'
-      },
-      {
-        id: 121,
-        name: 'test-tagafasdf'
-      },
-      {
-        id: 221,
-        name: 'tagsfasdfsdaf'
-      },
-      {
-        id: 321,
-        name: 'test-tagafasdf'
-      },
-      {
-        id: 421,
-        name: 'tagsfasdfsdaf'
-      }
-    ]
-  }
-  return [];
-})
 
 const onTagClick = tag => {
   if (selectTag.value?.id !== tag.id) {
