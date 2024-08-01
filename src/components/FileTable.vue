@@ -27,7 +27,7 @@
         <FileAbstract :data="currRow"/> 
       </el-tab-pane>
       <el-tab-pane label="标签" name="abstract">
-        <FileTagList :data="tagList" :fileId="currRow?.fileId" />
+        <FileTagList :fileId="currRow?.fileId" />
       </el-tab-pane>
     </el-tabs>
   </el-drawer>
@@ -49,7 +49,6 @@ const props = defineProps({
 })
 
 const currRow = ref();
-const tagList = ref([]);
 const showFileDetail = ref(false);
 const activeTab = ref('detail');
 const router = useRouter();

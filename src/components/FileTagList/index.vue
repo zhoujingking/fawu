@@ -25,13 +25,9 @@ import {
   Delete,
   Plus,
 } from '@element-plus/icons-vue'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const props = defineProps({
-  data: {
-    type: Object,
-    required: true
-  },
   fileId: {
     type: String,
     required: true
@@ -62,12 +58,10 @@ const populateTagList = async fileId => {
   isLoading.value = false;
 }
 
-const tags = ref(props.data?.tags || [])
+const tags = ref([]);
 const dialogVisible = ref(false);
 const actionType = ref('new');
 const isLoading = ref(false);
-
-populateTagList(props.fileId);
 
 const onDelete = tag => {
   ElMessageBox.confirm(
@@ -104,6 +98,10 @@ const onNewTag = () => {
 const onTagDone = () => {
   populateTagList(props.fileId);
 }
+
+onMounted(() => {
+  populateTagList(props.fileId);
+})
 
 </script>
 

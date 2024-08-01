@@ -8,7 +8,7 @@
         <FileAbstract :data="data" />
       </el-tab-pane>
       <el-tab-pane label="标签" name="tags">
-        <FileTagList :data="data" />
+        <FileTagList :fileId="fileId" />
       </el-tab-pane>
       <el-tab-pane label="相关性" name="relatives">
         <FileRelatives />
@@ -24,9 +24,23 @@
 import FileAbstract from '@/components/FileAbstract.vue';
 import FileTagList from '@/components/FileTagList/index.vue';
 import FileRelatives from './FileRelatives.vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import FileViewer from '@/components/FileViewer/index.vue';
 import Graph from '@/components/Graph.vue';
+import { useRoute } from 'vue-router';
+import { sendPostRequest } from '@/utils';
+
+const route = useRoute();
+const fileId = route.query.id;
+const fileInfo = ref({});
+
+const getFileDetail = async fileId => {
+  return sendPostRequest('/file/getFileSummary', {
+    fileId
+  })
+}
+
+
 
 const activeTab = ref('detail');
 const data = ref({
@@ -37,16 +51,16 @@ const data = ref({
   tags: []
 })
 
-const fileList = [
-  'https://bridge-test.jsfund.cn/test.pptx',
-  'https://bridge-test.jsfund.cn/test.xlsx',
-  'https://bridge-test.jsfund.cn/mindera.docx',
-  '/test.pdf'
-];
+getFileDetail(fileId).then(data => [
+  console.log(data)
+])
 
-const fileIndex = Math.floor(Math.random() * fileList.length);
-
-const fileUrl = fileList[fileIndex];
+const fileUrl = computed(() => {
+  if (fileId.endsWith('.pdf')) {
+    return `/file/v1/${fileId}`;
+  }
+  return `/file/v1/${fileId}`;
+})
 
 const onTabClick = tab => {
   console.log(tab)

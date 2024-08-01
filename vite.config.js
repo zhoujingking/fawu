@@ -16,6 +16,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/file/v1': {
+        target: 'http://3.215.119.4:8080',
+        changeOrigin: true,
+        secure: false,
+      }
     },
   },
   plugins: [
