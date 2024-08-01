@@ -17,9 +17,9 @@
           </el-tree>
         </div>
         <div class="tags" v-if="folderTags.length">
-          <div class="tag" :class="{ active: selectTag.id === tag.id }" v-for="tag in folderTags" :key="tag.id"
+          <div class="tag" :class="{ active: selectTag.tagId === tag.tagId }" v-for="tag in folderTags" :key="tag.tagId"
             @click="onTagClick(tag)">{{
-          tag.name }}
+          tag.tagName }}
           </div>
         </div>
       </div>
@@ -47,8 +47,7 @@ import FolderDialog from './FolderDialog.vue';
 import UploadDialog from './UploadDialog.vue';
 import TreeContextMenu from './TreeContextMenu.vue';
 import FileTable from '@/components/FileTable.vue';
-import { ref, nextTick, computed } from 'vue';
-import { ElLoading } from 'element-plus';
+import { ref, nextTick } from 'vue';
 import { sendPostRequest } from '@/utils';
 
 const getProjectList = async () => {
@@ -100,16 +99,15 @@ const getFolderList = async (id, type = 'folder') => {
   }))
 }
 
-const getFileListByTag = async folderId => {
-  return [
-    {
-      id: 1,
-      title: '如果你确实需要使用',
-      author: '周树人',
-      date: '2024-07-12 13:23:21',
-      rate: 0
-    }
-  ]
+const getFileListByTag = async tagId => {
+  try {
+    const data = await sendPostRequest('/file/searchFile', {
+      tagId
+    });
+    return data.fileList || [];
+  } catch {
+    return [];
+  }
 }
 const getFileListByFolder = async id => {
   const data = await getFolderDetail(id);
@@ -207,10 +205,10 @@ const onNodeClick = (node) => {
 
 
 const onTagClick = tag => {
-  if (selectTag.value?.id !== tag.id) {
+  if (selectTag.value?.tagId !== tag.tagId) {
     selectTag.value = tag;
     // TODO: search file list by tag
-    populateFileList(tag.id, 'tag');
+    populateFileList(tag.tagId, 'tag');
   } else {
     selectTag.value = {};
     populateFileList(selectedNode.value.id, 'folder');
