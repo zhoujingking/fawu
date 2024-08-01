@@ -32,11 +32,15 @@ const getFileSummary = async fileId => {
 }
 
 const summary = ref({});
-
+const isLoading = ref(false);
 
 onMounted(() => {
+  isLoading.value = true;
   getFileSummary(props.fileId).then(data => {
     summary.value = data;
+    isLoading.value = false;
+  }).catch(() => {
+    isLoading.value = false;
   })
 })
 </script>

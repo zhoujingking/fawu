@@ -1,47 +1,44 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="搜索" align-center>
-    <FileTable />
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="onCancel">取消</el-button>
-        <el-button type="primary" @click="onConfirm" :loading="isLoading">
-          确认
-        </el-button>
-      </div>
-    </template>
+  <el-dialog v-model="dialogVisible" title="搜索" align-center width="90%">
+    <div v-loading="isLoading">
+      <FileTable :data="fileList" />
+    </div>
   </el-dialog>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import FileTable from '../FileTable.vue';
+import { sendPostRequest } from '@/utils';
 
 const props = defineProps({
-  data: Object,
-  type: String
-})
-
-
-const emit = defineEmits(['change'])
+  searchText: String
+});
+const emit = defineEmits(['change']);
 
 const dialogVisible = defineModel({
   type: Boolean,
   required: true
-})
-
+});
 const isLoading = ref(false);
+const fileList = ref([]);
 
-const onCancel = () => {
-  dialogVisible.value = false;
-}
+const searchFileList = async searchText => {
+  const data = await sendPostRequest('/file/searchFile', {
+    keyword: searchText
+  });
+  return data.fileList || [];
+};
 
-const onConfirm = () => {
-  formRef.value.validate(isValid => {
-    if (isValid) {
-      
-    }
+onMounted(() => {
+  isLoading.value = true;
+  searchFileList(props.searchText).then(data => {
+    fileList.value = data;
+    isLoading.value = false;
+  }).catch(() => {
+    isLoading.value = false;
   })
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

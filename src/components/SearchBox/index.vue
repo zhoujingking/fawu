@@ -1,5 +1,5 @@
 <template>
-  <el-input class="search-box" v-model="searchText" placeholder="请输入搜索内容" :suffix-icon="Search" @change="onChange" />
+  <el-input class="search-box" v-model="searchText" placeholder="请输入搜索内容" :suffix-icon="Search" @keyup.enter="onSearch" />
   <SearchDialog v-if="dialogVisible" v-model="dialogVisible" :searchText="searchText"/>
 </template>
 
@@ -10,7 +10,7 @@ import { ref } from 'vue';
 const searchText = ref('');
 const dialogVisible = ref(false);
 
-const onChange = () => {
+const onSearch = () => {
   if (searchText.value) {
     dialogVisible.value = true;
   }

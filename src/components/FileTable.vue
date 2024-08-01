@@ -18,7 +18,7 @@
           <el-rate v-model="row.star" @change="onRateChange(row)" />
         </div>
       </div>
-      <div class="empty row" v-if="!data.length">文件夹中暂无文件</div>
+      <div class="empty row" v-if="!data.length">暂无文件</div>
     </div>
   </div>
   <el-drawer v-if="showFileDetail" v-model="showFileDetail" :with-header="false">
@@ -63,8 +63,6 @@ const onRowNav = row => {
       id: row.fileId
     }
   })
-  // currRow.value = row;
-  // showFileDetail.value = true;
 }
 
 const onRateChange = (file) => {
