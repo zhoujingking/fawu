@@ -7,8 +7,9 @@
       </div>
       <div class="project-container" :class="{ hasTags: !!folderTags.length }">
         <div class="tree-container">
-          <el-tree ref="treeRef" :data="treeData" highlight-current default-expand-all :props="nodeProps" node-key="id"
-            :current-node-key="selectedNode?.id" @node-click="onNodeClick" @node-contextmenu="onContextMenu">
+          <el-tree ref="treeRef" :data="treeData" highlight-current default-expand-all :props="nodeProps"
+            node-key="uniqueId" :current-node-key="selectedNode?.uniqueId" @node-click="onNodeClick"
+            @node-contextmenu="onContextMenu">
             <template #empty>
               <div class="empty-text">暂无项目</div>
               <div class="empty-text">您可以<span class="new-text" @click="onNewProject">新建项目</span></div>
@@ -32,7 +33,8 @@
       @change="onFolderDone" />
     <UploadDialog v-if="uploadDialogVisible" v-model="uploadDialogVisible" :data="selectedNode"
       @change="onUploadDone" />
-    <TreeContextMenu v-model="isContextMenuShow" :options="contextMenuOptions" @click="onContextMenuClick" />
+    <TreeContextMenu v-if="isContextMenuShow" v-model="isContextMenuShow" :options="contextMenuOptions"
+      :type="selectedNode?.type" @click="onContextMenuClick" />
   </div>
 </template>
 
@@ -54,11 +56,10 @@ const getProjectList = async () => {
   return (data?.projectList || []).map(proj => ({
     name: proj.projectName,
     id: proj.projectId,
-    type: 'project'
+    type: 'project',
+    uniqueId: `project-${proj.projectId}`
   }));
 }
-
-
 
 const deleteProject = async (id) => {
   return sendPostRequest('/project/deleteProject', {
@@ -70,6 +71,12 @@ const getFolderDetail = async id => {
   return sendPostRequest('/folder/getFolderDetails', {
     folderId: id
   });
+}
+
+const deleteFolder = async id => {
+  return sendPostRequest('/folder/deleteFolder', {
+    folderId: id
+  })
 }
 
 const getFolderList = async (id, type = 'folder') => {
@@ -88,7 +95,8 @@ const getFolderList = async (id, type = 'folder') => {
   return list.map(folder => ({
     id: folder.folderId,
     name: folder.folderName,
-    type: 'folder'
+    type: 'folder',
+    uniqueId: `folder-${folder.folderName}`
   }))
 }
 
@@ -164,8 +172,12 @@ const onNewProject = () => {
 
 const onProjectDone = project => {
   if (actionType.value === 'new') {
-    treeData.value.push(project)
-    selectedNode.value = project;
+    const newProject = {
+      ...project,
+      uniqueId: `project-${project.id}`
+    }
+    treeData.value.push(newProject)
+    selectedNode.value = newProject;
   } else { // edit
     const targetProject = treeData.value.find(item => item.id === project.id);
     targetProject.name = project.name;
@@ -175,10 +187,14 @@ const onProjectDone = project => {
 
 const onFolderDone = folder => {
   if (actionType.value === 'new') {
+    const newFolder = {
+      ...folder,
+      uniqueId: `folder-${folder.id}`
+    }
     selectedNode.value.children = selectedNode.value.children || [];
-    selectedNode.value.children.push(folder);
+    selectedNode.value.children.push(newFolder);
     nextTick(() => {
-      selectedNode.value = folder;
+      selectedNode.value = newFolder;
     });
   } else { // edit
     selectedNode.value.name = folder.name;
@@ -190,7 +206,7 @@ const onUploadDone = () => {
 }
 
 const onNodeClick = (node, treeNode) => {
-  if (selectedNode.value?.id !== node.id && selectedNode.value?.type === node.type) {
+  if (selectedNode.value?.id !== node.id || selectedNode.value?.type !== node.type) {
     selectedNode.value = node;
     selectTag.value = {};
     if (node.type === 'folder') {
@@ -284,7 +300,7 @@ const contextMenuOptions = ref({
   y: 0
 });
 const onContextMenu = (e, node) => {
-  if (selectedNode.value?.id !== node.id) {
+  if (selectedNode.value?.id !== node.id || selectedNode.value?.type !== node.type) {
     selectedNode.value = node;
     selectTag.value = {};
   }
@@ -295,7 +311,7 @@ const onContextMenu = (e, node) => {
   }
 }
 const onContextMenuClick = item => {
-  const isProjectNode = treeData.value.map(node => node.name).includes(selectedNode.value.name);
+  const isProjectNode = selectedNode.value.type === 'project';
   if (item === 'new') {
     actionType.value = 'new';
     folderDialogVisible.value = true;
@@ -312,13 +328,23 @@ const onContextMenuClick = item => {
       }
     )
       .then(async () => {
-        await deleteProject(selectedNode.value.id)
+        if (isProjectNode) {
+          await deleteProject(selectedNode.value.id);
+          ElMessage({
+            type: 'success',
+            message: '项目删除成功',
+          })
+        } else {
+          await deleteFolder(selectedNode.value.id);
+          ElMessage({
+            type: 'success',
+            message: '文件夹删除成功',
+          })
+        }
+
         treeRef.value.remove(selectedNode.value);
         selectedNode.value = null;
-        ElMessage({
-          type: 'success',
-          message: '节点删除成功',
-        })
+
       })
   } else if (item === 'edit') {
     actionType.value = 'edit';

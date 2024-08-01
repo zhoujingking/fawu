@@ -7,7 +7,7 @@
         </el-icon>
       </template>
     </context-menu-item>
-    <context-menu-item label="上传文件" @click="emit('click', 'upload')">
+    <context-menu-item v-if="type === 'folder'" label="上传文件" @click="emit('click', 'upload')">
       <template #icon>
         <el-icon>
           <Upload />
@@ -40,9 +40,12 @@ import {
 } from '@element-plus/icons-vue'
 import { ContextMenu, ContextMenuItem } from '@imengyu/vue3-context-menu'
 
-defineProps({
-  options: Object
-})
+const props = defineProps({
+  options: Object,
+  type: String
+});
+
+console.log(props.type)
 
 const emit = defineEmits(['click'])
 
