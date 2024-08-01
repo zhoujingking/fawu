@@ -19,14 +19,33 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue';
-import { useProjectStore } from '@/stores/project';
-import { storeToRefs } from 'pinia';
+import { sendPostRequest } from '@/utils';
+
+const createFolder = async (id, name, type = 'folder') => {
+  const payLoad = {
+    folderName: name,
+  };
+  if (type === 'folder') {
+    payLoad.parentFolderId = id;
+  } else {
+    payLoad.projectId = id;
+  }
+  return sendPostRequest('/folder/addFolder', payLoad);
+}
+
+const updateFolder = async (id, name) => {
+  return sendPostRequest('folder/renameFolder', {
+    folderId: id,
+    newFolderName: name
+  })
+}
 
 const props = defineProps({
   data: Object,
   type: String
 })
 
+console.log(props.data)
 
 const emit = defineEmits(['change'])
 
@@ -51,20 +70,26 @@ const formRules = reactive({
 });
 
 const isLoading = ref(false);
-const store = useProjectStore();
-const { projectList } = storeToRefs(store);
 
 const onCancel = () => {
   dialogVisible.value = false;
 }
 
 const onConfirm = () => {
-  formRef.value.validate(isValid => {
+  formRef.value.validate(async isValid => {
     if (isValid) {
-      // isLoading.value = true;
+      isLoading.value = true;
+      let folderId = '';
+      if (props.type === 'new') {
+        const data = await createFolder(props.data.id, form.value.name, props.data.type);
+        folderId = data.folderId;
+      } else {
+        await updateFolder(props.data.id, form.value.name);
+        folderId = props.data.id;
+      }
       dialogVisible.value = false;
       emit('change', {
-        id: props.type === 'new' ? `id-${form.value.name}` : props.data?.id,
+        id: folderId,
         ...form.value
       })
     }

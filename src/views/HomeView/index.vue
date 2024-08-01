@@ -66,22 +66,30 @@ const deleteProject = async (id) => {
   })
 }
 
+const getFolderDetail = async id => {
+  return sendPostRequest('/folder/getFolderDetails', {
+    folderId: id
+  });
+}
+
 const getFolderList = async (id, type = 'folder') => {
-  // const list = [
-  //   {
-  //     id: Math.random(),
-  //     name: 'test-folder'
-  //   },
-  //   {
-  //     id: Math.random(),
-  //     name: 'test-folder2'
-  //   }
-  // ];
-  // return list.map(folder => ({
-  //   ...folder,
-  //   type: 'folder'
-  // }))
-  return [];
+  let list = [];
+  if (type === 'folder') {
+    const data = await getFolderDetail(id);
+    list = data.folderList || [];
+  } else {
+    const data = await sendPostRequest('/project/getProjectDetails', {
+      projectId: id
+    })
+
+    list = data.folderLit || [];
+  }
+
+  return list.map(folder => ({
+    id: folder.folderId,
+    name: folder.folderName,
+    type: 'folder'
+  }))
 }
 
 const getFileListByTag = async folderId => {
@@ -146,7 +154,6 @@ const fileList = ref([]);
 const isLoading = ref(false);
 
 getProjectList().then(data => {
-  console.log(data)
   treeData.value = data;
 });
 
@@ -183,7 +190,7 @@ const onUploadDone = () => {
 }
 
 const onNodeClick = (node, treeNode) => {
-  if (selectedNode.value?.id !== node.id) {
+  if (selectedNode.value?.id !== node.id && selectedNode.value?.type === node.type) {
     selectedNode.value = node;
     selectTag.value = {};
     if (node.type === 'folder') {
@@ -191,15 +198,11 @@ const onNodeClick = (node, treeNode) => {
     }
   }
   const type = node.type;
-  if (treeNode.level > 3) {
-    // node.children = [];
-  } else {
-    node.children = node.children || [];
-    if (!node.children.length) {
-      getFolderList(node.id, type).then(data => {
-        node.children = data;
-      });
-    }
+  node.children = node.children || [];
+  if (!node.children.length) {
+    getFolderList(node.id, type).then(data => {
+      node.children = data;
+    });
   }
 }
 
