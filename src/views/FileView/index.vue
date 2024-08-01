@@ -5,13 +5,13 @@
         <FileViewer class="doc" :src="fileUrl" />
       </el-tab-pane>
       <el-tab-pane label="概览" name="abstract">
-        <FileAbstract :data="data" />
+        <FileAbstract :fileId="fileId" />
       </el-tab-pane>
       <el-tab-pane label="标签" name="tags">
         <FileTagList :fileId="fileId" />
       </el-tab-pane>
       <el-tab-pane label="相关性" name="relatives">
-        <FileRelatives />
+        <FileRelatives :fileId="fileId" />
       </el-tab-pane>
       <el-tab-pane label="知识图谱" name="graph">
         <Graph class="doc" />
@@ -43,17 +43,6 @@ const getFileDetail = async fileId => {
 
 
 const activeTab = ref('detail');
-const data = ref({
-  id: 1,
-  title: 'test title',
-  author: 'godking',
-  date: '2021-01-23',
-  tags: []
-})
-
-getFileDetail(fileId).then(data => [
-  console.log(data)
-])
 
 const fileUrl = computed(() => {
   if (fileId.endsWith('.pdf')) {

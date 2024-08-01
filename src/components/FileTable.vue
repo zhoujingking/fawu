@@ -13,7 +13,7 @@
           <span @click="onRowNav(row)">{{ row.fileTitle }}</span>
         </div>
         <div class="td author">{{ row.author }}</div>
-        <div class="td date">{{ displayDate(row.createTimestamp) }}</div>
+        <div class="td date">{{ formatDate(row.createTimestamp) }}</div>
         <div class="td star" @click.stop>
           <el-rate v-model="row.star" @change="onRateChange(row)" />
         </div>
@@ -24,7 +24,7 @@
   <el-drawer v-if="showFileDetail" v-model="showFileDetail" :with-header="false">
     <el-tabs class="tabs" v-model="activeTab" lazy>
       <el-tab-pane label="详情" name="detail">
-        <FileAbstract :data="currRow"/> 
+        <FileAbstract :fileId="currRow?.fileId"/> 
       </el-tab-pane>
       <el-tab-pane label="标签" name="abstract">
         <FileTagList :fileId="currRow?.fileId" />
@@ -38,8 +38,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import FileAbstract from '@/components/FileAbstract.vue';
 import FileTagList from '@/components/FileTagList/index.vue';
-import dayjs from 'dayjs';
-import { sendPostRequest } from '@/utils';
+import { sendPostRequest, formatDate } from '@/utils';
 
 const props = defineProps({
   data: {
@@ -82,9 +81,6 @@ const onRateChange = (file) => {
   }
 }
 
-const displayDate = date => {
-  return dayjs(date).format('YYYY-MM-DD');
-}
 </script>
 
 <style lang="scss" scoped>

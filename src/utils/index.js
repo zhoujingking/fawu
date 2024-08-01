@@ -1,6 +1,7 @@
 import { AUTH_KEY, USER_INFO } from '@/config';
 import { v4 as uuid } from 'uuid';
 import axios from 'axios';
+import dayjs from 'dayjs';
 
 export const sendPostRequest = async (url, payload) => {
   // fetch context from localstorage
@@ -43,5 +44,12 @@ export const clearAuthToken = () => localStorage.removeItem(AUTH_KEY);
 export const clearAllStorage = () => {
   clearUserInfoStorage();
   clearAuthToken();
+}
+
+export const formatDate = date => {
+  if (!date) {
+    return '--';
+  }
+  return dayjs(date).format('YYYY-MM-DD');
 }
 
