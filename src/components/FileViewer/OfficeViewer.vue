@@ -12,7 +12,7 @@ const props = defineProps({
   }
 })
 const url = computed(() => `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(props.src)}`);
-console.log(url)
+console.log(url.value)
 </script>
 
 <style lang="scss" scoped>

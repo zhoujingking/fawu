@@ -1,6 +1,6 @@
 <template>
   <div class="file-view">
-    <el-tabs class="tabs"v-model="activeTab" lazy @tab-click="onTabClick">
+    <el-tabs class="tabs" v-model="activeTab" lazy @tab-click="onTabClick">
       <el-tab-pane label="详情" name="detail">
         <FileViewer class="doc" :src="fileUrl" />
       </el-tab-pane>
@@ -28,27 +28,16 @@ import { computed, ref } from 'vue';
 import FileViewer from '@/components/FileViewer/index.vue';
 import Graph from '@/components/Graph.vue';
 import { useRoute } from 'vue-router';
-import { sendPostRequest } from '@/utils';
 
 const route = useRoute();
 const fileId = route.query.id;
-const fileInfo = ref({});
-
-const getFileDetail = async fileId => {
-  return sendPostRequest('/file/getFileSummary', {
-    fileId
-  })
-}
-
-
-
 const activeTab = ref('detail');
 
 const fileUrl = computed(() => {
   if (fileId.endsWith('.pdf')) {
     return `/file/v1/${fileId}`;
   }
-  return `/file/v1/${fileId}`;
+  return `http://3.215.119.4:8080/file/v1/${fileId}`;
 })
 
 const onTabClick = tab => {

@@ -6,7 +6,7 @@
         <el-button class="new-btn" type="primary" size="small" :icon="Plus" @click="onNewProject">新建项目</el-button>
       </div>
       <div class="project-container" :class="{ hasTags: !!folderTags.length }">
-        <div class="tree-container">
+        <div class="tree-container" v-loading="isTreeLoading" element-loading-text="加载中">
           <el-tree ref="treeRef" :data="treeData" highlight-current default-expand-all :props="nodeProps"
             node-key="uniqueId" :current-node-key="selectedNode?.uniqueId" @node-click="onNodeClick"
             @node-contextmenu="onContextMenu">
@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="content" v-loading="isFileListLoading" element-loading-text="加载中">
-      <FileTable :data="fileList" />
+      <FileTable :data="fileList" v-if="selectedNode?.type === 'folder'"/>
     </div>
     <ProjectDialog v-if="projectDialogVisible" v-model="projectDialogVisible" :type="actionType" :data="selectedNode"
       @change="onProjectDone" />
@@ -47,7 +47,7 @@ import FolderDialog from './FolderDialog.vue';
 import UploadDialog from './UploadDialog.vue';
 import TreeContextMenu from './TreeContextMenu.vue';
 import FileTable from '@/components/FileTable.vue';
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, onMounted } from 'vue';
 import { sendPostRequest } from '@/utils';
 
 const getProjectList = async () => {
@@ -136,10 +136,17 @@ const selectTag = ref({});
 const fileList = ref([]);
 const folderTags = ref([]);
 const isFileListLoading = ref(false);
+const isTreeLoading = ref(false);
 
-getProjectList().then(data => {
-  treeData.value = data;
-});
+onMounted(() => {
+  isTreeLoading.value = true;
+  getProjectList().then(data => {
+    treeData.value = data;
+    isTreeLoading.value = false
+  }).catch(() => {
+    isTreeLoading.value = false;
+  });
+})
 
 const onNewProject = () => {
   projectDialogVisible.value = true;
@@ -209,7 +216,6 @@ const onNodeClick = (node) => {
 const onTagClick = tag => {
   if (selectTag.value?.tagId !== tag.tagId) {
     selectTag.value = tag;
-    // TODO: search file list by tag
     populateFileList(tag.tagId, 'tag');
   } else {
     selectTag.value = {};

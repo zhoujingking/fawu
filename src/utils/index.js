@@ -2,6 +2,7 @@ import { AUTH_KEY, USER_INFO } from '@/config';
 import { v4 as uuid } from 'uuid';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import router from '@/router'
 
 export const sendPostRequest = async (url, payload) => {
   // fetch context from localstorage
@@ -18,6 +19,12 @@ export const sendPostRequest = async (url, payload) => {
   const { data } = await axios.post(url, requestBody);
   if (data.code === 0) {
     return data.result || {};
+  }
+  if (data.code === -20003) {
+    router.replace({
+      name: 'login'
+    });
+    return;
   }
   throw new Error(data.msg);
 }
