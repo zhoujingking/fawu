@@ -7,7 +7,7 @@
       <div class="td star">星级</div>
     </div>
     <div class="body">
-      <div class="tr row" :class="{ selected: row.id === currRow?.id }" v-for="(row, index) in data" :key="index"
+      <div class="tr row" :class="{ selected: row.fileId === currRow?.fileId }" v-for="(row, index) in data" :key="index"
         @click="onRowClick(row)">
         <div class="td title" :title="row.fileTitle">
           <span @click="onRowNav(row)">{{ row.fileTitle }}</span>
@@ -15,7 +15,7 @@
         <div class="td author">{{ row.author }}</div>
         <div class="td date">{{ displayDate(row.createTimestamp) }}</div>
         <div class="td star" @click.stop>
-          <el-rate v-model="row.rate" @change="onRateChange" />
+          <el-rate v-model="row.star" @change="onRateChange(row)" />
         </div>
       </div>
       <div class="empty row" v-if="!data.length">文件夹中暂无文件</div>
@@ -39,6 +39,7 @@ import { useRouter } from 'vue-router';
 import FileAbstract from '@/components/FileAbstract.vue';
 import FileTagList from '@/components/FileTagList/index.vue';
 import dayjs from 'dayjs';
+import { sendPostRequest } from '@/utils';
 
 const props = defineProps({
   data: {
@@ -60,15 +61,25 @@ const onRowNav = row => {
   router.push({
     name: 'file',
     query: {
-      id: row.id
+      id: row.fileId
     }
   })
   // currRow.value = row;
   // showFileDetail.value = true;
 }
 
-const onRateChange = () => {
-  console.log('TODO')
+const onRateChange = (file) => {
+  try {
+    sendPostRequest('file/starFile', {
+      fileId: file.fileId,
+      star: file.star
+    })
+  } catch(e) {
+    ElMessage({
+      message: `星级评级失败: ${e.message}`,
+      type: 'error',
+    })
+  }
 }
 
 const displayDate = date => {
