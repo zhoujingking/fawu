@@ -3,9 +3,6 @@
     <div class="row tag" v-for="(tag, index) in tags" :key="tag.tagId">
       <div class="name" :title="tag.tagName">{{ tag.tagName }}</div>
       <div class="row ops">
-        <!-- <el-icon class="icon" @click="onEdit(tag)">
-        <Edit />
-      </el-icon> -->
         <el-icon class="icon" @click="onDelete(tag)">
           <Delete />
         </el-icon>
