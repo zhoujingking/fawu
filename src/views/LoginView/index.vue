@@ -32,8 +32,10 @@ const isLoading = ref(false);
 
 const formRef = ref();
 const form = ref({
-  phone: '11111111111',
-  password: 'password'
+  // phone: '11111111111',
+  // password: 'password'
+  phone: '',
+  password: ''
 });
 
 const formRules = reactive({
