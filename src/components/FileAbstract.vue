@@ -1,18 +1,12 @@
 <template>
-  <div>
-    <h3>标题</h3>
-    <p>{{ summary.fileTitle }}</p>
-    <h3>作者</h3>
-    <p>{{ summary.author }}</p>
-    <h3>添加时间</h3>
-    <p>{{ formatDate(summary.createTimestamp) }}</p>
-  </div>
+  <VueJsonPretty :data="summary" :showIcon="false" :showDoubleQuotes="false" />
 </template>
 
 <script setup>
 import { sendPostRequest } from '@/utils';
 import { onMounted, ref } from 'vue';
-import { formatDate } from '@/utils';
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
 
 const props = defineProps({
   fileId: {
@@ -46,7 +40,5 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-p {
-  color: var(--primary-text-color);
-}
+
 </style>

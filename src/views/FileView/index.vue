@@ -1,20 +1,20 @@
 <template>
   <div class="file-view">
-    <el-tabs class="tabs" v-model="activeTab" lazy @tab-click="onTabClick">
+    <el-tabs class="tabs" v-model="activeTab" @tab-click="onTabClick">
       <el-tab-pane label="详情" name="detail">
-        <FileViewer class="doc" :src="fileUrl" />
+        <FileViewer class="doc" :src="fileUrl" lazy />
       </el-tab-pane>
       <el-tab-pane label="概览" name="abstract">
-        <FileAbstract :fileId="fileId" />
+        <FileAbstract class="doc":fileId="fileId" lazy />
       </el-tab-pane>
       <el-tab-pane label="标签" name="tags">
-        <FileTagList :fileId="fileId" />
+        <FileTagList class="doc" :fileId="fileId" lazy />
       </el-tab-pane>
       <el-tab-pane label="相关性" name="relatives">
-        <FileRelatives :fileId="fileId" />
+        <FileRelatives class="doc":fileId="fileId" lazy />
       </el-tab-pane>
-      <el-tab-pane label="知识图谱" name="graph">
-        <Graph class="doc" />
+      <el-tab-pane label="知识图谱" name="graph" lazy>
+        <Graph class="doc" :fileId="fileId" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -51,6 +51,7 @@ const onTabClick = tab => {
   height: 100%;
   padding: 24px;
   .doc {
+    overflow: auto;
     height: calc(100vh - 164px);
   }
 }

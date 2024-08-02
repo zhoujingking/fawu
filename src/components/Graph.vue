@@ -13,8 +13,10 @@ import {
   GridComponent
 } from "echarts/components";
 import VChart from "vue-echarts";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import graph from './graph.json'
+import { sendPostRequest } from '@/utils';
+import { ElMessage } from 'element-plus';
 
 use([
   CanvasRenderer,
@@ -69,6 +71,28 @@ const option = ref({
       }
     }
   ]
+})
+
+const props = defineProps({
+  fileId: {
+    type: String,
+    required: true
+  }
+});
+
+const getGraphData = async fileId => {
+  const data = await sendPostRequest('/file/getFileKnowledgeGraph', {
+    fileId,
+  });
+
+}
+
+onMounted(() => {
+  ElMessage({
+    message: '接口没有调试',
+    type: 'error'
+  })
+  getGraphData(props.fileId)
 })
 
 </script>
