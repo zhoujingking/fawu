@@ -35,7 +35,7 @@ const props = defineProps({
 
 const emit = defineEmits(['change'])
 
-const fileExtensions = '.doc,.docx,.pdf,.xlsx,.csv,.pptx';
+const fileExtensions = '.doc,.docx,.pdf,.xlsx,.csv,.pptx,.html,.htm,.txt';
 const maxNumOfFiles = 5;
 const fileSizeLimit = 10; // M
 
