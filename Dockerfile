@@ -1,6 +1,7 @@
 FROM nginx
 
-COPY scripts/nginx/ /etc/nginx/conf.d/
+COPY scripts/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY scripts/nginx/nginx.conf /etc/nginx/nginx.conf
 
 COPY dist/ /usr/share/nginx/html/
 
