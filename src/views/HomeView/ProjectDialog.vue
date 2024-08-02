@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogVisible" :title="title" width="500" align-center>
+  <el-dialog v-model="dialogVisible" :title="title" width="500" align-center :close-on-press-escape="false" :close-on-click-modal="false">
     <el-form class="form" ref="formRef" :model="form" :rules="formRules" label-position="right" label-width="auto"
       @submit.prevent>
       <el-form-item label="项目名称" prop="name">
@@ -12,7 +12,7 @@
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="onCancel">取消</el-button>
+        <el-button type="danger" :disabled="isLoading" @click="onCancel">取消</el-button>
         <el-button type="primary" @click="onConfirm" :loading="isLoading">
           确认
         </el-button>
@@ -28,7 +28,7 @@ import { sendPostRequest } from '@/utils';
 const createProject = async (name, description) => {
   const data = sendPostRequest('/project/addProject', {
     projectName: name,
-    describe: description
+    description
   });
   return data;
 }
@@ -92,7 +92,7 @@ const onConfirm = () => {
           await updateProject({
             projectId: props.data.id,
             projectName: form.value.name,
-            describe: form.value.description
+            description: form.value.description
           })
           projectId = props.data.id;
         }

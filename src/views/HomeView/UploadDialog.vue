@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="上传文件" width="500" align-center>
+  <el-dialog v-model="dialogVisible" title="上传文件" width="500" align-center :close-on-press-escape="false" :close-on-click-modal="false">
     <ElUpload class="upload" ref="uploadRef" :auto-upload="false" drag multiple :accept="fileExtensions"
       :limit="maxNumOfFiles" :file-list="fileList" @change="onFileChange" @remove="onFileRemove" @exceed="onExceed">
       <el-icon class="el-icon--upload"><upload-filled /></el-icon>
@@ -9,7 +9,7 @@
     </ElUpload>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="onCancel">取消</el-button>
+        <el-button type="danger" :disabled="isLoading" @click="onCancel">取消</el-button>
         <el-button type="primary" @click="onConfirm" v-loading.fullscreen.lock="isLoading" element-loading-text="正在上传">
           确认
         </el-button>

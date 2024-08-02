@@ -1,6 +1,6 @@
 <template>
   <PdfViewer v-if="isPdf" :src="src" />
-  <OfficeViewer v-if="isOffice" :src="src" />
+  <OfficeViewer v-else-if="isOffice" :src="src" />
 </template>
 
 <script setup>

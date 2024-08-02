@@ -56,6 +56,7 @@ const getProjectList = async () => {
     name: proj.projectName,
     id: proj.projectId,
     type: 'project',
+    description: proj.description,
     uniqueId: `project-${proj.projectId}`
   }));
 }
