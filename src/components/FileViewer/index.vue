@@ -17,19 +17,24 @@ const props = defineProps({
   }
 })
 
+const fileId = props.fileId;
 
 const src = computed(() => {
-  return `/file/v1/${props.fileId}`;
+  if (isOffice.value) {
+    const origin = window.location.origin;
+    return `${origin}/file/v1/${fileId}`;
+  }
+  return `/file/v1/${fileId}`;
 });
 
-const isPdf = computed(() => src.value.endsWith('.pdf'));
+const isPdf = computed(() => fileId.endsWith('.pdf'));
 const isOffice = computed(() => {
-  return src.value.endsWith('.docx') || src.value.endsWith('.doc') || 
-    src.value.endsWith('.pptx') || src.value.endsWith('.ppt') || 
-    src.value.endsWith('.xlsx') || src.value.endsWith('.xls') || src.value.endsWith('.csv');
+  return fileId.endsWith('.docx') || fileId.endsWith('.doc') || 
+    fileId.endsWith('.pptx') || fileId.endsWith('.ppt') || 
+    fileId.endsWith('.xlsx') || fileId.endsWith('.xls') || fileId.endsWith('.csv');
 });
 const isText = computed(() => {
-  return src.value.endsWith('.html') || src.value.endsWith('.htm') || src.value.endsWith('.txt');
+  return fileId.endsWith('.html') || fileId.endsWith('.htm') || fileId.endsWith('.txt');
 });
 </script>
 
