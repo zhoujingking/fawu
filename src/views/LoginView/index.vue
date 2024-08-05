@@ -79,6 +79,7 @@ const onLogin = () => {
           name: 'home'
         })
       } catch(e) {
+        isLoading.value = false;
         ElMessage({
           message: e.message || '登录失败，请确认手机号和密码是否正确',
           type: 'error',
