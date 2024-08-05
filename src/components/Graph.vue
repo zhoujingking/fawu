@@ -1,5 +1,5 @@
 <template>
-  <v-chart class="chart" autoresize :option="option" />
+  <v-chart class="chart" v-loading="isLoading" autoresize :option="option" />
 </template>
 
 <script setup>
@@ -13,10 +13,9 @@ import {
   GridComponent
 } from "echarts/components";
 import VChart from "vue-echarts";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import graph from './graph.json'
 import { sendPostRequest } from '@/utils';
-import { ElMessage } from 'element-plus';
 
 use([
   CanvasRenderer,
@@ -27,18 +26,28 @@ use([
   GridComponent
 ]);
 
-const option = ref({
-  title: {
-    text: 'Les Miserables',
-    subtext: 'Default layout',
-    top: 'bottom',
-    left: 'right'
+const props = defineProps({
+  fileId: {
+    type: String,
+    required: true
+  }
+});
+
+const graphData = ref({});
+const isLoading = ref(false);
+
+const option = computed(() => ({
+  tooltip: {
+    formatter: (param) => {
+      if (param.dataType === 'node') {
+        return param.data.name;
+      }
+      return param.data.relationshipType;
+    }
   },
-  tooltip: {},
   legend: [
     {
-      // selectedMode: 'single',
-      data: graph.categories.map(function (a) {
+      data: (graphData.value.categories || []).map(function (a) {
         return a.name;
       })
     }
@@ -47,58 +56,76 @@ const option = ref({
   animationEasingUpdate: 'quinticInOut',
   series: [
     {
-      name: 'Les Miserables',
+      name: '',
       type: 'graph',
       legendHoverLink: false,
-      layout: 'none',
-      data: graph.nodes,
-      links: graph.links,
-      categories: graph.categories,
+      layout: 'force',
+      data: graphData.value.nodes || [],
+      links: graphData.value.links || [],
+      categories: graphData.value.categories || [],
+      symbolSize: 50,
+      edgeSymbol: ['circle', 'arrow'],
+      edgeSymbolSize: [4, 10],
       roam: true,
+      force: {
+        initLayout: 'circle',
+        repulsion: 1000,
+        edgeLength: [10, 40],
+      },
       label: {
-        position: 'right',
+        show: true,
+        position: 'inside',
         formatter: '{b}'
+      },
+      labelLayout: {
+        hideOverlap: true
       },
       lineStyle: {
         color: 'source',
-        curveness: 0.3
+        curveness: 0
+      },
+      edgeLabel: {
+        formatter: a  => {
+          console.log(a)
+        }       
       },
       emphasis: {
         focus: 'adjacency',
         lineStyle: {
-          width: 10
-        }
+          width: 5
+        },
       }
     }
   ]
-})
+}));
 
-const props = defineProps({
-  fileId: {
-    type: String,
-    required: true
-  }
-});
+
 
 const getGraphData = async fileId => {
-  const data = await sendPostRequest('/file/getFileKnowledgeGraph', {
-    fileId,
-  });
+  try {
+    const data = await sendPostRequest('/file/getFileKnowledgeGraph', {
+      fileId,
+    });
+    return data;
+  } catch {
+    return graph;
+  }
 
 }
 
 onMounted(() => {
-  ElMessage({
-    message: '接口没有调试',
-    type: 'error'
-  })
-  getGraphData(props.fileId)
+  isLoading.value = true;
+  getGraphData(props.fileId).then(data => {
+    isLoading.value = false;
+    graphData.value = data || {};
+  });
 })
 
 </script>
 
 <style lang="scss" scoped>
 .chart {
+  overflow: hidden !important;
   width: 100%;
   height: 100%;
 }
