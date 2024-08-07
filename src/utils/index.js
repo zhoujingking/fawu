@@ -57,6 +57,6 @@ export const formatDate = date => {
   if (!date) {
     return '--';
   }
-  return dayjs(date).format('YYYY-MM-DD');
+  return dayjs(date).format('YYYY-MM-DD hh:mm:ss');
 }
 

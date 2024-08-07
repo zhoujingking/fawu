@@ -1,30 +1,21 @@
 <template>
-  <div>
-    <div class="header tr row">
-      <div class="td title">标题</div>
-      <div class="td author">作者</div>
-      <div class="td date">添加时间</div>
-      <div class="td star">星级</div>
-    </div>
-    <div class="body">
-      <div class="tr row" :class="{ selected: row.fileId === currRow?.fileId }" v-for="(row, index) in data" :key="index"
-        @click="onRowClick(row)">
-        <div class="td title" :title="row.fileTitle">
-          <span @click="onRowNav(row)">{{ row.fileTitle }}</span>
+  <el-table :data="data" :border="true" stripe highlight-current-row :header-cell-style="headerCellStyle" empty-text="暂无文件" @row-click="onRowClick">
+    <el-table-column v-for="col in columns" :key="col.name" :prop="col.name" :label="col.label" :width="col.width">
+      <template #default="scope">
+        <div v-if="scope.column.property === 'createTimestamp'">{{ formatDate(scope.row[scope.column.property]) }}</div>
+        <div v-else-if="scope.column.property === 'star'">
+          <el-rate v-model="scope.row.star" @change="onRateChange(scope.row)" />
         </div>
-        <div class="td author">{{ row.author }}</div>
-        <div class="td date">{{ formatDate(row.createTimestamp) }}</div>
-        <div class="td star" @click.stop>
-          <el-rate v-model="row.star" @change="onRateChange(row)" />
+        <div v-else-if="scope.column.property === 'fileTitle'">
+          <span class="title" @click="onRowNav(scope.row)">{{ scope.row.fileTitle }}</span>
         </div>
-      </div>
-      <div class="empty row" v-if="!data.length">暂无文件</div>
-    </div>
-  </div>
+      </template>
+    </el-table-column>
+  </el-table>
   <el-drawer v-if="showFileDetail" v-model="showFileDetail" :with-header="false">
     <el-tabs class="tabs" v-model="activeTab" lazy>
       <el-tab-pane label="详情" name="detail">
-        <FileAbstract :fileId="currRow?.fileId"/> 
+        <FileAbstract :fileId="currRow?.fileId" />
       </el-tab-pane>
       <el-tab-pane label="标签" name="abstract">
         <FileTagList :fileId="currRow?.fileId" />
@@ -42,27 +33,56 @@ import { sendPostRequest, formatDate } from '@/utils';
 
 const props = defineProps({
   data: {
-    type: Array, 
+    type: Array,
     requried: true
   }
-})
+});
+
+const columns = [
+  {
+    name: 'fileTitle',
+    label: '标题'
+  },
+  {
+    name: 'author',
+    label: '作者'
+  },
+  {
+    name: 'createTimestamp',
+    label: '日期',
+    width: 150,
+  },
+  {
+    name: 'star',
+    label: '星级',
+    width: 140,
+  },
+]
 
 const currRow = ref();
 const showFileDetail = ref(false);
 const activeTab = ref('detail');
 const router = useRouter();
 
+const headerCellStyle = {
+  height: '34px',
+  fontSize: '18px',
+  fontWeight: 'bold',
+  backgroundColor: '#F6F6F6'
+}
+
 const onRowClick = row => {
   currRow.value = row;
   showFileDetail.value = true;
 }
 const onRowNav = row => {
-  router.push({
+  const route = router.resolve({
     name: 'file',
     query: {
       id: row.fileId
     }
-  })
+  });
+  window.open(route.href, '_blank');
 }
 
 const onRateChange = (file) => {
@@ -71,7 +91,7 @@ const onRateChange = (file) => {
       fileId: file.fileId,
       star: file.star
     })
-  } catch(e) {
+  } catch (e) {
     ElMessage({
       message: `星级评级失败: ${e.message}`,
       type: 'error',
@@ -82,66 +102,8 @@ const onRateChange = (file) => {
 </script>
 
 <style lang="scss" scoped>
-.header {
-  height: 34px;
-  font-size: 18px;
-  font-weight: bold;
-  background-color: #F6F6F6;
-  line-height: 1;
-}
-
-.body {
-  .tr {
-    border: solid 1px #ebeef5;
-
-    &:hover {
-      background-color: #EFF4FF;
-    }
-
-    // &.selected {
-    //   background-color: #EFF4FF;
-    //   color: var(--link-color);
-    // }
-
-    .title {
-      color: var(--link-color);
-      cursor: pointer;
-    }
-  }
-  .empty {
-    justify-content: center;
-    align-items: center;
-    height: 100px;
-    color: var(--primary-text-color);
-    // background-color: #F6F6F6;
-  }
-}
-
-.td {
-  overflow: hidden;
-  flex-shrink: 0;
-  padding: 4px 6px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.tr {
-  align-items: center;
-}
-
 .title {
-  flex: 1;
-}
-
-.author {
-  width: 100px;
-}
-
-.date {
-  width: 160px;
-}
-
-.star {
-  width: 128px;
+  color: var(--link-color);
+  cursor: pointer;
 }
 </style>
