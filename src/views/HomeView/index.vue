@@ -26,7 +26,7 @@
     </div>
     <div class="content" v-loading="isFileListLoading" element-loading-text="加载中">
       <div class="folder-content-container" v-if="selectedNode?.type === 'folder'">
-        <FolderContent :data="fileList" />
+        <FolderContent :data="fileList" @upload="onUpload"/>
       </div>
       <FileTable v-else :data="[]"/>
     </div>
@@ -247,7 +247,7 @@ const onContextMenu = (e, node) => {
     y: e.y
   }
 }
-const onUploadClick = () => {
+const onUpload = () => {
   uploadDialogVisible.value = true;
 }
 const onContextMenuClick = item => {
