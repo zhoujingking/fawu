@@ -25,7 +25,10 @@
       </div>
     </div>
     <div class="content" v-loading="isFileListLoading" element-loading-text="加载中">
-      <FileTable :data="fileList" v-if="selectedNode?.type === 'folder'"/>
+      <div class="folder-content-container" v-if="selectedNode?.type === 'folder'">
+        <FolderContent :data="fileList" />
+      </div>
+      <FileTable v-else :data="[]"/>
     </div>
     <ProjectDialog v-if="projectDialogVisible" v-model="projectDialogVisible" :type="actionType" :data="selectedNode"
       @change="onProjectDone" />
@@ -41,11 +44,13 @@
 <script setup>
 import {
   Plus,
+  Upload
 } from '@element-plus/icons-vue'
 import ProjectDialog from './ProjectDialog.vue';
 import FolderDialog from './FolderDialog.vue';
 import UploadDialog from './UploadDialog.vue';
 import TreeContextMenu from './TreeContextMenu.vue';
+import FolderContent from './FolderContent.vue';
 import FileTable from '@/components/FileTable.vue';
 import { ref, nextTick, onMounted } from 'vue';
 import { sendPostRequest } from '@/utils';
@@ -202,6 +207,8 @@ const onNodeClick = (node) => {
     selectTag.value = {};
     if (node.type === 'folder') {
       populateFileList(node.id, node.type);
+    } else {
+      fileList.value = [];
     }
   }
   const type = node.type;
@@ -212,7 +219,6 @@ const onNodeClick = (node) => {
     });
   }
 }
-
 
 const onTagClick = tag => {
   if (selectTag.value?.tagId !== tag.tagId) {
@@ -240,6 +246,9 @@ const onContextMenu = (e, node) => {
     x: e.x,
     y: e.y
   }
+}
+const onUploadClick = () => {
+  uploadDialogVisible.value = true;
 }
 const onContextMenuClick = item => {
   const isProjectNode = selectedNode.value.type === 'project';
@@ -296,9 +305,6 @@ const onContextMenuClick = item => {
 .aside {
   width: 300px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, .06);
-  // background-color: #f4f4f7;
-
-  // background: cyan;
   .header {
     justify-content: space-between;
     align-items: center;
@@ -372,5 +378,8 @@ const onContextMenuClick = item => {
 .content {
   width: calc(100% - 300px);
   padding: 24px;
+  .folder-content-container {
+    height: calc(100% - 44px);
+  }
 }
 </style>

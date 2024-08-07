@@ -45,8 +45,6 @@ const props = defineProps({
   type: String
 });
 
-console.log(props.type)
-
 const emit = defineEmits(['click'])
 
 const isContextMenuShow = defineModel({

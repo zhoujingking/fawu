@@ -1,6 +1,8 @@
 <template>
-  <el-table :data="data" :border="true" stripe highlight-current-row :header-cell-style="headerCellStyle" empty-text="暂无文件" @row-click="onRowClick">
-    <el-table-column v-for="col in columns" :key="col.name" :prop="col.name" :label="col.label" :width="col.width">
+  <el-table :data="data" max-height="100%" :border="true" stripe highlight-current-row :header-cell-style="headerCellStyle"
+    empty-text="暂无文件" @row-click="emits('row-click', $event)">
+    <el-table-column v-for="col in columns" :key="col.name" :prop="col.name" :label="col.label" :width="col.width"
+      :sortable="col.sortable">
       <template #default="scope">
         <div v-if="scope.column.property === 'createTimestamp'">{{ formatDate(scope.row[scope.column.property]) }}</div>
         <div v-else-if="scope.column.property === 'star'">
@@ -12,23 +14,10 @@
       </template>
     </el-table-column>
   </el-table>
-  <el-drawer v-if="showFileDetail" v-model="showFileDetail" :with-header="false">
-    <el-tabs class="tabs" v-model="activeTab" lazy>
-      <el-tab-pane label="详情" name="detail">
-        <FileAbstract :fileId="currRow?.fileId" />
-      </el-tab-pane>
-      <el-tab-pane label="标签" name="abstract">
-        <FileTagList :fileId="currRow?.fileId" />
-      </el-tab-pane>
-    </el-tabs>
-  </el-drawer>
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import FileAbstract from '@/components/FileAbstract.vue';
-import FileTagList from '@/components/FileTagList/index.vue';
 import { sendPostRequest, formatDate } from '@/utils';
 
 const props = defineProps({
@@ -37,6 +26,7 @@ const props = defineProps({
     requried: true
   }
 });
+const emits = defineEmits(['row-click']);
 
 const columns = [
   {
@@ -51,6 +41,7 @@ const columns = [
     name: 'createTimestamp',
     label: '日期',
     width: 150,
+    sortable: true,
   },
   {
     name: 'star',
@@ -59,9 +50,6 @@ const columns = [
   },
 ]
 
-const currRow = ref();
-const showFileDetail = ref(false);
-const activeTab = ref('detail');
 const router = useRouter();
 
 const headerCellStyle = {
@@ -71,10 +59,6 @@ const headerCellStyle = {
   backgroundColor: '#F6F6F6'
 }
 
-const onRowClick = row => {
-  currRow.value = row;
-  showFileDetail.value = true;
-}
 const onRowNav = row => {
   const route = router.resolve({
     name: 'file',

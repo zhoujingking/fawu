@@ -1,18 +1,20 @@
 <template>
   <div v-loading="isLoading">
-    <div class="row tag" v-for="(tag, index) in tags" :key="tag.tagId">
-      <div class="name" :title="tag.tagName">{{ tag.tagName }}</div>
-      <div class="row ops">
-        <el-icon class="icon" @click="onDelete(tag)">
-          <Delete />
-        </el-icon>
+    <div>
+      <div class="row tag" v-for="(tag, index) in tags" :key="tag.tagId">
+        <div class="name" :title="tag.tagName">{{ tag.tagName }}</div>
+        <div class="row ops">
+          <el-icon class="icon" @click="onDelete(tag)">
+            <Delete />
+          </el-icon>
+        </div>
+      </div>
+      <div v-if="!tags.length" class="empty">
+        暂无标签
       </div>
     </div>
-    <div v-if="!tags.length" class="empty">
-      暂无标签
-    </div>
+    <el-button type="primary" size="small" :icon="Plus" @click="onNewTag">添加标签</el-button>
   </div>
-  <el-button type="primary" size="small" :icon="Plus" @click="onNewTag">添加标签</el-button>
   <TagDialog v-if="dialogVisible" v-model="dialogVisible" :fileId="fileId" :type="actionType" @change="onTagDone" />
 </template>
 
@@ -111,7 +113,9 @@ onMounted(() => {
 
   &:hover {
     border-color: var(--link-color);
-    .name, .icon {
+
+    .name,
+    .icon {
       color: var(--link-color);
     }
   }
