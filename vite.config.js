@@ -23,6 +23,16 @@ export default defineConfig({
       }
     },
   },
+  build: { // manually configure chunks
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          echarts: ['echarts'],
+          'element-plus': ['element-plus']
+        }
+      }
+    }
+  },
   plugins: [
     vue(),
     vueDevTools(),
