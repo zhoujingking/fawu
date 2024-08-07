@@ -1,17 +1,17 @@
 <template>
   <div class="file-view">
     <el-tabs class="tabs" v-model="activeTab" @tab-click="onTabClick">
-      <el-tab-pane label="详情" name="detail">
-        <FileViewer class="doc" :fileId="fileId" lazy />
+      <el-tab-pane label="详情" name="detail" lazy>
+        <FileViewer class="doc" :fileId="fileId" />
       </el-tab-pane>
-      <el-tab-pane label="概览" name="abstract">
-        <FileAbstract class="doc":fileId="fileId" lazy />
+      <el-tab-pane label="概览" name="abstract" lazy>
+        <FileAbstract class="doc":fileId="fileId"/>
       </el-tab-pane>
-      <el-tab-pane label="标签" name="tags">
-        <FileTagList class="doc" :fileId="fileId" lazy />
+      <el-tab-pane label="标签" name="tags" lazy>
+        <FileTagList class="doc" :fileId="fileId"/>
       </el-tab-pane>
-      <el-tab-pane label="相关性" name="relatives">
-        <FileRelatives class="doc":fileId="fileId" lazy />
+      <el-tab-pane label="相关性" name="relatives" lazy>
+        <FileRelatives class="doc":fileId="fileId"/>
       </el-tab-pane>
       <el-tab-pane label="知识图谱" name="graph" lazy>
         <Graph class="doc" :fileId="fileId" />
