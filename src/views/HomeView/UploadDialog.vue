@@ -114,7 +114,6 @@ const onConfirm = async () => {
       message: `文件上传成功`,
       type: 'success'
     });
-    isLoading.value = false;
     dialogVisible.value = false;
     emit('change');
   } catch(e) {
@@ -123,6 +122,7 @@ const onConfirm = async () => {
       type: 'error'
     })
   }
+  isLoading.value = false;
 }
 </script>
 
