@@ -1,8 +1,8 @@
 <template>
   <div class="file-view row">
     <FileViewer class="doc" :fileId="fileId" />
-    <el-button class="btn" type="primary" :title="isExpanded ? '折叠' : '展开'" :icon="isExpanded ? ArrowRight : ArrowLeft" @click="onBtnClick"></el-button>
-    <div class="aside" v-if="isExpanded">
+    <div class="btn" @click="onBtnClick">{{ isExpanded ? '折叠' : '展开' }}</div>
+    <div class="aside" :class="isExpanded ? 'show': 'hide'">
       <el-tabs class="tabs" v-model="activeTab" @tab-click="onTabClick">
         <el-tab-pane label="概览" name="abstract">
           <FileAbstract class="doc" :fileId="fileId" />
@@ -30,11 +30,6 @@ import FileViewer from '@/components/FileViewer/index.vue';
 import Graph from '@/components/Graph.vue';
 import { useRoute } from 'vue-router';
 
-import {
-  ArrowLeft,
-  ArrowRight
-} from '@element-plus/icons-vue'
-
 const route = useRoute();
 const fileId = route.query.id;
 const activeTab = ref('abstract');
@@ -59,17 +54,28 @@ const onBtnClick = () => {
   .doc {
     flex-grow: 1;
     overflow: auto;
+    width: 70%;
     height:  100%;
   }
   .aside {
+    flex-shrink: 0;
     padding: 0 12px;
     width: 30%;
     background-color: #f5f7fa;
+    &.hide {
+      display: none;
+    }
   }
   .btn {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
+    right: 0;
+    top: 50%;
+    padding: 3px 5px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: white;
+    background-color: #79bbff;
+    cursor: pointer;
   }
 }
 
