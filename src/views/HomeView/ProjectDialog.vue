@@ -6,7 +6,8 @@
         <el-input type="text" v-model="form.name" placeholder="请输入项目名称" />
       </el-form-item>
       <el-form-item label="描述" prop="description">
-        <el-input type="textarea" v-model="form.description" placeholder="请输入项目描述" resize="horizontal" :max-length="200"
+        <el-input type="textarea" v-model="form.description" placeholder="(1)项目的大致目标                                                                                 (2)可能涉及的法律领域" 
+          resize="none" :max-length="200"
           :rows="10" show-word-limit :input-style="{ height: '200px' }" />
       </el-form-item>
     </el-form>

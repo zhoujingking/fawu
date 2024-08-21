@@ -43,8 +43,7 @@
 
 <script setup>
 import {
-  Plus,
-  Upload
+  Plus
 } from '@element-plus/icons-vue'
 import ProjectDialog from './ProjectDialog.vue';
 import FolderDialog from './FolderDialog.vue';
