@@ -1,12 +1,15 @@
 <template>
-  <VueJsonPretty :data="summary" :showIcon="false" :showDoubleQuotes="false" />
+  <div class="abstract">
+    <div class="row entry" v-for="(entry, index) in Object.entries(summary)" :key="index">
+      <div class="key">{{ entry[0] }}：</div>
+      <div class="value">{{ entry[1] }}</div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { sendPostRequest } from '@/utils';
 import { onMounted, ref } from 'vue';
-import VueJsonPretty from 'vue-json-pretty';
-import 'vue-json-pretty/lib/styles.css';
 
 const props = defineProps({
   fileId: {
@@ -40,5 +43,17 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-
+.entry {
+  font-size: 14px;
+  line-height: 22px;
+  .key {
+    flex-shrink: 0;
+    width: 100px;
+    color: #00000072;
+    text-align: end;
+  }
+  .value {
+    color: #000000D8;
+  }
+}
 </style>
