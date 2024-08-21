@@ -28,7 +28,11 @@
       <div class="folder-content-container" v-if="selectedNode?.type === 'folder'">
         <FolderContent :data="fileList" @upload="onUpload"/>
       </div>
-      <FileTable v-else :data="[]"/>
+      <div v-else-if="selectedNode?.type === 'project'">
+        <h2>项目名称：{{ selectedNode?.name }}</h2>
+        <div>项目描述：{{ selectedNode?.description }}</div>
+      </div>
+      <el-empty v-else description="暂未选中任何节点" />
     </div>
     <ProjectDialog v-if="projectDialogVisible" v-model="projectDialogVisible" :type="actionType" :data="selectedNode"
       @change="onProjectDone" />

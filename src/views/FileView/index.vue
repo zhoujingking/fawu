@@ -4,7 +4,7 @@
     <div class="btn" @click="onBtnClick">{{ isExpanded ? '折叠' : '展开' }}</div>
     <div class="aside" :class="isExpanded ? 'show': 'hide'">
       <el-tabs class="tabs" v-model="activeTab" @tab-click="onTabClick">
-        <el-tab-pane label="概览" name="abstract">
+        <el-tab-pane label="详情" name="abstract">
           <FileAbstract class="doc" :fileId="fileId" />
         </el-tab-pane>
         <el-tab-pane label="标签" name="tags" lazy>
